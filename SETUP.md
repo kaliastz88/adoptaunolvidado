@@ -86,6 +86,42 @@ Para quitarle el acceso a alguien se marca como rechazado, no se borra su
 registro. Si se borrara, esa persona volvería a aparecer como una solicitud
 nueva y podría ser aprobada por descuido.
 
+### Aviso por correo cuando alguien pide acceso
+
+Lo configura [`supabase/aviso-por-correo.sql`](supabase/aviso-por-correo.sql).
+Antes de correrlo hay que reemplazar `CLAVE_DE_RESEND_AQUI` por una clave real
+de <https://resend.com>. El archivo del repositorio conserva el marcador a
+propósito: la clave vive en el vault de secretos de Supabase, nunca en el
+código.
+
+Supabase no puede mandar correos arbitrarios. Su servidor gratuito solo envía
+mensajes de autenticación y solo a miembros del proyecto, así que el aviso nunca
+llegaría. Por eso la base llama a Resend por HTTP con `pg_net`, que encola la
+petición y la manda en segundo plano sin hacer esperar a quien se registra.
+
+El aviso se manda a quien tenga el rol de dueña, leído de la tabla en vez de un
+correo escrito a mano. Si mañana cambia quién administra el panel, el aviso la
+sigue sin tocar este archivo.
+
+El envío está envuelto en un bloque que captura cualquier error. El disparador
+corre dentro de la misma transacción que crea la cuenta, así que sin esa
+protección una falla de correo impediría que alguien se registrara. Un aviso que
+no sale nunca debe romper el registro.
+
+Para revisar si un aviso salió:
+
+```sql
+select status_code, error_msg, created
+from net._http_response
+order by created desc limit 5;
+```
+
+La cuenta de Resend tiene que estar registrada con el mismo correo que recibe
+los avisos. Sin un dominio propio verificado, el remitente de prueba
+`onboarding@resend.dev` solo entrega a la dirección dueña de la cuenta. Para
+avisarle a varias personas hay que verificar un dominio en Resend y cambiar el
+remitente por una dirección de ese dominio.
+
 ### Por qué no hay confirmación por correo
 
 El permiso lo da la aprobación de la dueña, no el correo, así que confirmar la
