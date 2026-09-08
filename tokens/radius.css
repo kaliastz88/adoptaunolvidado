@@ -1,0 +1,19 @@
+/* Adopta un Olvidado — Corner radius tokens
+   The brief explicitly asks for "soft rounded elements" throughout — generous
+   rounding on cards and buttons, pill shapes on tags/CTAs. */
+
+:root {
+  --radius-xs:   8px;
+  --radius-sm:   12px;
+  --radius-md:   16px;
+  --radius-lg:   24px;
+  --radius-xl:   32px;
+  --radius-pill: 999px;
+
+  --radius-button: var(--radius-pill);
+  --radius-card:   var(--radius-lg);
+  --radius-input:  var(--radius-sm);
+  --radius-modal:  var(--radius-xl);
+  --radius-tag:    var(--radius-pill);
+  --radius-image:  var(--radius-md);
+}

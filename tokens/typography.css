@@ -1,0 +1,51 @@
+/* Adopta un Olvidado — Typography tokens
+   No brand font files were supplied. Nearest Google Fonts substitutes chosen to
+   match the brief (warm, modern, human, a little friendly-round without being
+   childish) — flagged to the user in readme.md under "Font substitution". */
+
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ---- Base font families ---- */
+  --font-display: 'Sora', 'Segoe UI', system-ui, sans-serif;      /* headlines, big numbers */
+  --font-body:    'Work Sans', 'Segoe UI', system-ui, sans-serif; /* paragraphs, UI copy */
+
+  /* ---- Base type scale (px, converted to rem at 16px root) ---- */
+  --text-2xs:  0.75rem;   /* 12 */
+  --text-xs:   0.8125rem; /* 13 */
+  --text-sm:   0.9375rem; /* 15 */
+  --text-base: 1.0625rem; /* 17 */
+  --text-md:   1.25rem;   /* 20 */
+  --text-lg:   1.5rem;    /* 24 */
+  --text-xl:   1.875rem;  /* 30 */
+  --text-2xl:  2.375rem;  /* 38 */
+  --text-3xl:  3rem;      /* 48 */
+  --text-4xl:  3.75rem;   /* 60 */
+  --text-5xl:  4.75rem;   /* 76 */
+
+  /* ---- Line heights ---- */
+  --leading-tight:  1.08;
+  --leading-snug:   1.25;
+  --leading-normal: 1.5;
+  --leading-loose:  1.7;
+
+  /* ---- Letter spacing ---- */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide:  0.02em;
+  --tracking-wider: 0.06em;
+
+  /* ---- Semantic: roles ---- */
+  --font-hero:      700 var(--text-5xl)/var(--leading-tight) var(--font-display);
+  --font-h1:        700 var(--text-4xl)/var(--leading-tight) var(--font-display);
+  --font-h2:        700 var(--text-3xl)/var(--leading-tight) var(--font-display);
+  --font-h3:        600 var(--text-2xl)/var(--leading-snug) var(--font-display);
+  --font-h4:        600 var(--text-lg)/var(--leading-snug) var(--font-display);
+  --font-eyebrow:   600 var(--text-xs)/var(--leading-normal) var(--font-body);
+  --font-body-lg:   400 var(--text-md)/var(--leading-loose) var(--font-body);
+  --font-body-base: 400 var(--text-base)/var(--leading-normal) var(--font-body);
+  --font-body-sm:   400 var(--text-sm)/var(--leading-normal) var(--font-body);
+  --font-caption:   400 var(--text-xs)/var(--leading-normal) var(--font-body);
+  --font-button:    600 var(--text-base)/1 var(--font-body);
+  --font-stat:      800 var(--text-4xl)/var(--leading-tight) var(--font-display);
+}

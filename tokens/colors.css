@@ -1,0 +1,112 @@
+/* Adopta un Olvidado — Color tokens
+   Anchored to the real logo (navy circle + gold dog/stars, magenta→orange→gold
+   ring). Navy is primary/trust; gold is the sponsor/highlight accent lifted
+   straight from the dog mark. Paired with a warm terracotta CTA accent and a
+   hopeful sage green for success/adopted states. Tints/shades are generated
+   from the exact brand hex via color-mix so every step stays true to the logo. */
+
+:root {
+  /* ---- Base: Navy blue (trust, primary brand — exact logo navy) ---- */
+  --blue-600: #021C4B; /* exact logo navy */
+  --blue-50:  color-mix(in oklch, var(--blue-600) 6%,  white);
+  --blue-100: color-mix(in oklch, var(--blue-600) 14%, white);
+  --blue-200: color-mix(in oklch, var(--blue-600) 26%, white);
+  --blue-300: color-mix(in oklch, var(--blue-600) 42%, white);
+  --blue-400: color-mix(in oklch, var(--blue-600) 62%, white);
+  --blue-500: color-mix(in oklch, var(--blue-600) 82%, white);
+  --blue-700: color-mix(in oklch, var(--blue-600) 85%, black);
+  --blue-800: color-mix(in oklch, var(--blue-600) 65%, black);
+  --blue-900: color-mix(in oklch, var(--blue-600) 45%, black);
+
+  /* ---- Base: Terracotta (warm CTA accent — donate / adopt) ---- */
+  --terracotta-50:  oklch(96% 0.020 40);
+  --terracotta-100: oklch(91% 0.045 38);
+  --terracotta-200: oklch(84% 0.075 36);
+  --terracotta-300: oklch(76% 0.104 34);
+  --terracotta-400: oklch(68% 0.126 32);
+  --terracotta-500: oklch(60% 0.140 30);
+  --terracotta-600: oklch(52% 0.138 28);
+  --terracotta-700: oklch(44% 0.118 27);
+
+  /* ---- Base: Ring gradient (decorative only — logo badge glow, sparing use) ---- */
+  --ring-magenta: #DA00B6;
+  --ring-orange:  #FF9800;
+  --ring-gold:    #FEBC1A;
+  --brand-ring-gradient: conic-gradient(from 180deg, var(--ring-magenta), var(--ring-orange), var(--ring-gold), var(--ring-orange), var(--ring-magenta));
+
+  /* ---- Base: Sage (hope, health, adopted / success) ---- */
+  --sage-50:  oklch(96% 0.020 155);
+  --sage-100: oklch(91% 0.045 155);
+  --sage-200: oklch(83% 0.070 155);
+  --sage-300: oklch(74% 0.090 155);
+  --sage-400: oklch(64% 0.100 155);
+  --sage-500: oklch(55% 0.098 155);
+  --sage-600: oklch(46% 0.088 155);
+
+  /* ---- Base: Gold (sponsor / apadrina highlight — exact logo dog/stars gold) ---- */
+  --amber-500: #FEBC1A; /* exact logo gold */
+  --amber-50:  color-mix(in oklch, var(--amber-500) 10%, white);
+  --amber-200: color-mix(in oklch, var(--amber-500) 35%, white);
+  --amber-400: color-mix(in oklch, var(--amber-500) 78%, white);
+  --amber-600: color-mix(in oklch, var(--amber-500) 85%, black);
+
+  /* ---- Base: warm neutrals (never pure gray) ---- */
+  --neutral-0:   oklch(99.2% 0.003 80);
+  --neutral-25:  oklch(98% 0.005 75);
+  --neutral-50:  oklch(96.5% 0.006 75);
+  --neutral-100: oklch(93% 0.008 70);
+  --neutral-200: oklch(87% 0.010 65);
+  --neutral-300: oklch(78% 0.012 60);
+  --neutral-400: oklch(64% 0.014 55);
+  --neutral-500: oklch(52% 0.014 50);
+  --neutral-600: oklch(42% 0.014 50);
+  --neutral-700: oklch(33% 0.013 45);
+  --neutral-800: oklch(24% 0.011 40);
+  --neutral-900: oklch(17% 0.009 35);
+
+  /* ---- Semantic: surfaces ---- */
+  --surface-page:      var(--neutral-0);
+  --surface-alt:       var(--neutral-25);
+  --surface-card:      #ffffff;
+  --surface-sunken:    var(--neutral-50);
+  --surface-inverse:   var(--blue-900);
+  --surface-brand:     var(--blue-600);
+  --surface-brand-soft:var(--blue-50);
+
+  /* ---- Semantic: text ---- */
+  --text-primary:   var(--neutral-800);
+  --text-secondary: var(--neutral-500);
+  --text-muted:     var(--neutral-400);
+  --text-on-brand:  #ffffff;
+  --text-on-dark:   var(--blue-50);
+  --text-link:      var(--blue-600);
+  --text-link-hover: var(--blue-700);
+
+  /* ---- Semantic: borders ---- */
+  --border-subtle:  var(--neutral-100);
+  --border-default: var(--neutral-200);
+  --border-strong:  var(--neutral-300);
+  --border-brand:   var(--blue-300);
+  --border-focus:   var(--blue-500);
+
+  /* ---- Semantic: actions ---- */
+  --action-primary:        var(--blue-600);
+  --action-primary-hover:  var(--blue-700);
+  --action-primary-active: var(--blue-800);
+  --action-cta:            var(--terracotta-500);
+  --action-cta-hover:      var(--terracotta-600);
+  --action-cta-active:     var(--terracotta-700);
+  --action-sponsor:        var(--amber-500);
+  --action-sponsor-hover:  var(--amber-600);
+
+  /* ---- Semantic: status ---- */
+  --status-success:      var(--sage-500);
+  --status-success-bg:   var(--sage-50);
+  --status-info:         var(--blue-500);
+  --status-info-bg:      var(--blue-50);
+  --status-warning:      var(--amber-500);
+  --status-warning-bg:   var(--amber-50);
+
+  /* ---- Semantic: focus ring ---- */
+  --focus-ring: 0 0 0 3px var(--blue-200);
+}

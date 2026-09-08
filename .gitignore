@@ -1,0 +1,21 @@
+# macOS
+.DS_Store
+._*
+
+# Material de trabajo interno: las notas de las fundadoras, el documento de
+# origen del contenido y las capturas de referencia. No forman parte del sitio y
+# no tienen por qué quedar en un repositorio público.
+uploads/
+
+# Dependencias, por si alguna vez se agrega un paso de build
+node_modules/
+
+# Permisos locales de Claude Code. Son de esta computadora, no del proyecto.
+.claude/settings.local.json
+
+# Secretos. La clave anon de Supabase NO va aquí: es pública por diseño y vive
+# en ui_kits/website/supabase-config.js. Esta regla es para que nadie suba por
+# accidente un archivo con la clave service_role.
+.env
+.env.*
+*.local
