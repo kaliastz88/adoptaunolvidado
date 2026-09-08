@@ -14,10 +14,14 @@ seguridad, el usuario del panel y el archivo de configuración están listos y
 verificados. Quedan documentados por si algún día hay que rehacer el proyecto
 desde cero o montar uno de pruebas aparte.
 
-Lo que sí tienes que hacer tú:
+**El sitio ya está publicado** en GitHub Pages desde el repositorio
+<https://github.com/kaliastz88/adoptaunolvidado>:
 
-- Probar el sitio en el navegador siguiendo el paso 5.
-- Publicar en GitHub siguiendo el paso 6.
+- Sitio público: <https://kaliastz88.github.io/adoptaunolvidado/>
+- Panel: <https://kaliastz88.github.io/adoptaunolvidado/ui_kits/website/admin.html>
+
+Para publicar cambios de aquí en adelante basta con `git add`, `git commit` y
+`git push`. GitHub Pages vuelve a desplegar solo, en un par de minutos.
 
 ---
 
@@ -119,6 +123,11 @@ un par de minutos queda disponible en:
 
 - Sitio: `https://TU-USUARIO.github.io/TU-REPO/`
 - Panel: `https://TU-USUARIO.github.io/TU-REPO/ui_kits/website/admin.html`
+
+El archivo `.nojekyll` de la raíz no es opcional. GitHub Pages procesa los
+sitios con Jekyll, que descarta todo archivo cuyo nombre empiece con guion bajo.
+Sin él, `_ds_bundle.js` nunca llegaría al navegador y el sitio publicado saldría
+en blanco. Si algún día alguien lo borra, eso es lo que hay que revisar primero.
 
 No hace falta configurar nada más en Supabase: acepta peticiones desde
 cualquier origen y el inicio de sesión con correo y contraseña no usa URLs de
