@@ -24,7 +24,8 @@
       MAX_BYTES: 5 * 1024 * 1024,
       listAnimals: falla, saveAnimal: falla, deleteAnimal: falla,
       uploadPhoto: falla, deletePhoto: falla,
-      signIn: falla, signOut: falla, getSession: falla,
+      signIn: falla, signUp: falla, signOut: falla, getSession: falla,
+      miAcceso: falla, listPanelUsers: falla, decidirAcceso: falla,
       onAuthChange: function () { return function () {}; },
     };
   }
@@ -171,6 +172,14 @@
       return sb.auth.signInWithPassword({ email: email, password: password }).then(desempacar);
     },
 
+    // Registrarse no da acceso a nada. Un disparador en la base crea la
+    // solicitud en estado 'pendiente' y ahí se queda hasta que un owner la
+    // apruebe. El navegador no elige el estado: si pudiera, cualquiera se
+    // registraría ya aprobado.
+    signUp: function (email, password) {
+      return sb.auth.signUp({ email: email, password: password }).then(desempacar);
+    },
+
     signOut: function () {
       return sb.auth.signOut();
     },
@@ -179,6 +188,60 @@
       return sb.auth.getSession().then(function (res) {
         return res.data ? res.data.session : null;
       });
+    },
+
+    // --- Personas del panel -----------------------------------------------
+
+    // La solicitud de quien tiene la sesión abierta. Devuelve null si por lo que
+    // sea no existe la fila, y la interfaz lo trata igual que 'pendiente': el
+    // caso seguro es no dar acceso.
+    //
+    // El filtro por user_id es obligatorio, no una optimización. A un owner las
+    // políticas le dejan ver la tabla entera, así que sin filtrar la consulta
+    // devolvería todas las filas y .maybeSingle() fallaría justo para quien
+    // administra el panel.
+    miAcceso: function () {
+      return sb.auth.getUser().then(function (r) {
+        var usuario = r.data && r.data.user;
+        if (!usuario) return null;
+        return sb
+          .from('panel_users')
+          .select('user_id, email, role, status')
+          .eq('user_id', usuario.id)
+          .maybeSingle()
+          .then(desempacar);
+      });
+    },
+
+    // Solo un owner recibe la lista completa. A los demás las políticas de
+    // seguridad les devuelven únicamente su propia fila.
+    listPanelUsers: function () {
+      return sb
+        .from('panel_users')
+        .select('user_id, email, role, status, created_at, decided_at')
+        .order('created_at', { ascending: true })
+        .then(desempacar);
+    },
+
+    // Aprobar, rechazar o revocar el acceso de alguien.
+    //
+    // El .select() cumple la misma función que en deleteAnimal: cuando las
+    // políticas bloquean la operación, Postgres no falla, solo afecta cero
+    // filas. Sin pedir de vuelta lo modificado, el panel diría "aprobado" sin
+    // haber aprobado nada.
+    decidirAcceso: function (userId, status) {
+      return sb
+        .from('panel_users')
+        .update({ status: status, decided_at: new Date().toISOString() })
+        .eq('user_id', userId)
+        .select()
+        .then(desempacar)
+        .then(function (filas) {
+          if (!filas || filas.length === 0) {
+            throw new Error('No se pudo cambiar el acceso. Solo la dueña del panel puede hacerlo.');
+          }
+          return filas[0];
+        });
     },
 
     // Devuelve una función para cancelar la suscripción.

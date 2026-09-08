@@ -55,6 +55,44 @@ duplica ni borra nada.
 > `SELECT` para el rol `public`, y una de `INSERT`, una de `UPDATE` y una de
 > `DELETE` para el rol `authenticated`.
 
+## 2b. Registro de personas para el panel
+
+Abre otra consulta en el **SQL Editor**, pega
+[`supabase/usuarios-del-panel.sql`](supabase/usuarios-del-panel.sql) y presiona
+**Run**. Se corre después de `schema.sql`, porque reemplaza sus políticas de
+escritura.
+
+Luego, en **Authentication** → **Providers** → **Email**:
+
+- **Activa** *Enable sign ups*
+- **Desactiva** *Confirm email*
+
+### Cómo funciona el acceso
+
+Cualquiera puede crear una cuenta desde el panel, pero registrarse no da permiso
+a nada. La cuenta queda en espera hasta que la dueña la apruebe desde la
+pestaña **Usuarios**.
+
+Quien crea la cuenta nunca elige su propio estado. Un disparador en la base la
+crea siempre en espera y con el rol más bajo. Si esa decisión estuviera en el
+navegador, cualquiera se registraría ya aprobado.
+
+Hay dos niveles. La **dueña** aprueba, rechaza y quita accesos. Las demás
+personas solo gestionan animales y fotos. La base impide que la dueña se cambie
+el acceso a sí misma, para que no pueda dejarse fuera por error y bloquear el
+panel para todos.
+
+Para quitarle el acceso a alguien se marca como rechazado, no se borra su
+registro. Si se borrara, esa persona volvería a aparecer como una solicitud
+nueva y podría ser aprobada por descuido.
+
+### Por qué no hay confirmación por correo
+
+El permiso lo da la aprobación de la dueña, no el correo, así que confirmar la
+dirección no agrega seguridad. Y el servidor de correo gratuito de Supabase solo
+entrega mensajes a miembros del proyecto, de modo que a las voluntarias nunca les
+llegaría nada y se quedarían trabadas antes de poder pedir acceso.
+
 ## 3. Crear tu usuario del panel
 
 1. **Authentication** → **Users** → **Add user** → **Create new user**.
@@ -163,6 +201,7 @@ elegir un archivo, o pegar una imagen con `Ctrl+V`.
 | archivo | qué hace |
 | ------- | -------- |
 | `supabase/schema.sql` | tabla, bucket, políticas de seguridad y datos de ejemplo |
+| `supabase/usuarios-del-panel.sql` | registro con aprobación, roles y las políticas que exigen estar aprobado |
 | `ui_kits/website/supabase-config.js` | la URL y la clave anon de tu proyecto |
 | `ui_kits/website/dataClient.js` | única capa que habla con Supabase, expone `window.db` |
 | `ui_kits/website/PhotoDropzone.jsx` | la zona de arrastrar y soltar |
