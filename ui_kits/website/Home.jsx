@@ -3,11 +3,20 @@ function Home({ onSeeDog, onNavigate }) {
   const { Modal } = window.AdoptaUnOlvidadoDesignSystem_167478;
   const [open, setOpen] = React.useState(false);
 
-  const STORIES = [
-    { name: 'Valiente', note: 'Rescatado de la calle. Hoy vive en un hogar con jardín.' },
-    { name: 'Dorito', note: 'De la desconfianza al primer abrazo — ahora tiene familia.' },
-    { name: 'Nona', note: 'Encontrada herida. Recuperada y adoptada meses después.' },
-  ];
+  // Las historias son los perros que ya encontraron familia. Se leen de la base
+  // en vez de estar escritas aquí, así que marcar a alguien como "Adoptado" en
+  // el panel lo mueve solo del catálogo a esta sección.
+  const [historias, setHistorias] = React.useState([]);
+
+  React.useEffect(() => {
+    let vivo = true;
+    window.db.listAnimals()
+      .then((todos) => {
+        if (vivo) setHistorias(todos.filter((a) => a.status === 'Adoptado').slice(0, 3));
+      })
+      .catch(() => {});
+    return () => { vivo = false; };
+  }, []);
 
   return (
     <div>
@@ -22,12 +31,7 @@ function Home({ onSeeDog, onNavigate }) {
             <Button variant="secondary" icon="paw-print" onClick={() => onNavigate('catalogo')}>Conoce a nuestros perritos</Button>
           </div>
         </div>
-        <div style={{ flex: '1 1 320px', minWidth: 280, maxWidth: 380, height: 420, borderRadius: 'var(--radius-xl)', background: 'linear-gradient(160deg, var(--blue-200), var(--terracotta-100))', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-lg)' }}>
-          <div style={{ textAlign: 'center', color: 'var(--blue-700)' }}>
-            <i data-lucide="image" style={{ width: 56, height: 56 }} />
-            <p style={{ font: 'var(--font-body-sm)', marginTop: 10 }}>Foto editorial del perrito<br />(pendiente material real)</p>
-          </div>
-        </div>
+        <window.CarruselPerritos onSeeDog={onSeeDog} />
       </section>
 
       {/* Stats */}
@@ -37,26 +41,45 @@ function Home({ onSeeDog, onNavigate }) {
         <StatCounter value="100%" label="adopción responsable" tone="neutral" />
       </section>
 
-      {/* Stories */}
-      <section style={{ padding: '64px 48px', background: 'var(--surface-alt)' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-primary)', textTransform: 'uppercase' }}>Historias que transforman vidas</span>
-          <h2 style={{ font: 'var(--font-h2)', color: 'var(--text-primary)', margin: '10px 0 32px' }}>De la calle a un hogar para siempre</h2>
-          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
-            {STORIES.map((s) => (
-              <div key={s.name} style={{ flex: '1 1 300px', background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', overflow: 'hidden' }}>
-                <div style={{ height: 160, background: 'linear-gradient(120deg, var(--sage-100), var(--blue-100))', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--sage-600)' }}>
-                  <i data-lucide="images" style={{ width: 32, height: 32 }} />
+      {/* Stories — solo aparece si hay perros adoptados que contar. Una sección
+          vacía en la portada se lee como un sitio a medio hacer; mejor que no
+          esté hasta que haya una historia real. */}
+      {historias.length > 0 ? (
+        <section style={{ padding: '64px 48px', background: 'var(--surface-alt)' }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+            <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-primary)', textTransform: 'uppercase' }}>Historias que transforman vidas</span>
+            <h2 style={{ font: 'var(--font-h2)', color: 'var(--text-primary)', margin: '10px 0 32px' }}>De la calle a un hogar para siempre</h2>
+            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+              {historias.map((s) => (
+                <div
+                  key={s.id}
+                  onClick={() => onSeeDog(s)}
+                  style={{ flex: '1 1 300px', background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', overflow: 'hidden', cursor: 'pointer' }}
+                >
+                  <div style={{
+                    height: 160,
+                    background: s.photo
+                      ? `${s.photo_pos || 'center'}/cover no-repeat url(${s.photo})`
+                      : 'linear-gradient(120deg, var(--sage-100), var(--blue-100))',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--sage-600)',
+                  }}>
+                    {!s.photo ? <i data-lucide="images" style={{ width: 32, height: 32 }} /> : null}
+                  </div>
+                  <div style={{ padding: 20 }}>
+                    <div style={{ font: 'var(--font-h4)', color: 'var(--text-primary)' }}>{s.name}</div>
+                    <p style={{ font: 'var(--font-body-sm)', color: 'var(--text-secondary)', margin: '6px 0 0' }}>
+                      {s.bio || 'Encontró su hogar para siempre.'}
+                    </p>
+                  </div>
                 </div>
-                <div style={{ padding: 20 }}>
-                  <div style={{ font: 'var(--font-h4)', color: 'var(--text-primary)' }}>{s.name}</div>
-                  <p style={{ font: 'var(--font-body-sm)', color: 'var(--text-secondary)' }}>{s.note}</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <div style={{ marginTop: 28 }}>
+              <Button variant="secondary" icon="arrow-right" onClick={() => onNavigate('historias')}>Ver todas las historias</Button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* Aliados */}
       <section style={{ padding: '72px 48px', maxWidth: 1000, margin: '0 auto' }}>

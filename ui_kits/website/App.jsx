@@ -67,7 +67,7 @@ function App() {
         {route === 'apadrina' && <Apadrina />}
         {route === 'voluntario' && <Voluntario />}
         {route === 'donar' && <Donar />}
-        {route === 'historias' && <Historias />}
+        {route === 'historias' && <Historias onSeeDog={goProfile} onNavigate={setRoute} />}
         {route === 'aliados' && <Aliados />}
         {route === 'contacto' && <Contacto />}
       </main>
