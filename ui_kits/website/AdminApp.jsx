@@ -265,8 +265,8 @@ function AdminPanel({ acceso }) {
   const [nuevasSolicitudes, setNuevasSolicitudes] = React.useState(0);
 
   const PESTANAS = esOwner
-    ? ['Animales', 'Solicitudes', 'Alianzas', 'Usuarios']
-    : ['Animales', 'Solicitudes', 'Alianzas'];
+    ? ['Animales', 'Solicitudes', 'Padrinos', 'Alianzas', 'Usuarios']
+    : ['Animales', 'Solicitudes', 'Padrinos', 'Alianzas'];
 
   const [animals, setAnimals] = React.useState([]);
   const [cargando, setCargando] = React.useState(true);
@@ -435,6 +435,7 @@ function AdminPanel({ acceso }) {
         </div>
 
         {seccion === 'Usuarios' && esOwner ? <SeccionUsuarios yo={acceso} />
+        : seccion === 'Padrinos' ? <SeccionPadrinos />
         : seccion === 'Alianzas' ? <SeccionAlianzas />
         : seccion === 'Solicitudes' ? <SeccionSolicitudes onContarNuevas={setNuevasSolicitudes} /> : (
         <React.Fragment>
@@ -693,6 +694,107 @@ function SeccionSolicitudes({ onContarNuevas }) {
               </article>
             );
           })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// =============================================================================
+// Padrinos
+// =============================================================================
+
+const ESTADOS_PADRINO = ['nueva', 'en contacto', 'activo', 'cancelado'];
+
+function SeccionPadrinos() {
+  const { Button, Select, Badge } = window.AdoptaUnOlvidadoDesignSystem_167478;
+  const [filas, setFilas] = React.useState([]);
+  const [cargando, setCargando] = React.useState(true);
+  const [error, setError] = React.useState('');
+  const [filtro, setFiltro] = React.useState('Todas');
+  const [ocupada, setOcupada] = React.useState('');
+
+  React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
+
+  const recargar = React.useCallback(async () => {
+    setCargando(true); setError('');
+    try { setFilas(await window.db.listApadrinamientos()); }
+    catch (e) { setError(e.message); }
+    finally { setCargando(false); }
+  }, []);
+
+  React.useEffect(() => { recargar(); }, [recargar]);
+
+  async function cambiar(a, estado) {
+    setOcupada(a.id); setError('');
+    try { await window.db.cambiarEstadoApadrinamiento(a.id, estado); await recargar(); }
+    catch (e) { setError(e.message); }
+    finally { setOcupada(''); }
+  }
+
+  const tono = (e) => (e === 'activo' ? 'success' : e === 'nueva' ? 'warning' : e === 'cancelado' ? 'neutral' : 'info');
+  const visibles = filtro === 'Todas' ? filas : filas.filter((a) => a.estado === filtro);
+  const activos = filas.filter((a) => a.estado === 'activo').length;
+
+  if (cargando) return <p style={{ font: 'var(--font-body-base)', color: 'var(--text-muted)' }}>Cargando padrinos...</p>;
+
+  return (
+    <div>
+      <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-sponsor)', textTransform: 'uppercase' }}>Adopta un Olvidado · Admin</span>
+      <h1 style={{ font: 'var(--font-h2)', color: 'var(--text-primary)', margin: '8px 0 6px' }}>Quién apadrina a quién</h1>
+      <p style={{ font: 'var(--font-body-base)', color: 'var(--text-secondary)', marginBottom: 24 }}>
+        Cada apadrinamiento va ligado a un perro concreto, así se sabe a quién mandarle
+        noticias de su ahijado.{activos > 0 ? ` Hay ${activos} apadrinamiento${activos === 1 ? '' : 's'} activo${activos === 1 ? '' : 's'}.` : ''}
+      </p>
+
+      {error ? (
+        <div style={{ background: 'var(--terracotta-50)', border: '1px solid var(--terracotta-500)', color: 'var(--terracotta-600)', borderRadius: 'var(--radius-sm)', padding: '14px 18px', marginBottom: 20, font: 'var(--font-body-sm)' }}>{error}</div>
+      ) : null}
+
+      <div style={{ marginBottom: 24, maxWidth: 260 }}>
+        <Select label="Filtrar por estado" value={filtro} onChange={(e) => setFiltro(e.target.value)} options={['Todas', ...ESTADOS_PADRINO]} />
+      </div>
+
+      {visibles.length === 0 ? (
+        <div style={{ background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', padding: '48px 24px', textAlign: 'center', color: 'var(--text-muted)' }}>
+          {filas.length === 0
+            ? 'Todavía no hay apadrinamientos. Aparecerán aquí cuando alguien presione Apadrinar en la ficha de un perrito.'
+            : 'Ninguno con ese estado.'}
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {visibles.map((a) => (
+            <article key={a.id} style={{ background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', padding: '20px 24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                    <span style={{ font: 'var(--font-h4)', color: 'var(--text-primary)' }}>{a.nombre}</span>
+                    <Badge tone={tono(a.estado)}>{a.estado}</Badge>
+                  </div>
+                  <div style={{ font: 'var(--font-body-sm)', color: 'var(--text-secondary)', marginTop: 4 }}>
+                    Apadrina a <b>{a.animal_nombre || 'un rescatado'}</b> · {a.monto || 'monto por definir'}
+                  </div>
+                  <div style={{ font: 'var(--font-body-sm)', color: 'var(--text-muted)', marginTop: 2 }}>
+                    {a.correo}{a.telefono ? ` · ${a.telefono}` : ''}{a.ciudad ? ` · ${a.ciudad}` : ''}
+                  </div>
+                  {a.mensaje ? (
+                    <p style={{ font: 'var(--font-body-sm)', color: 'var(--text-primary)', margin: '10px 0 0', whiteSpace: 'pre-wrap' }}>{a.mensaje}</p>
+                  ) : null}
+                </div>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <a href={`mailto:${a.correo}`} style={{ textDecoration: 'none' }}>
+                    <Button size="sm" variant="secondary" icon="mail">Escribirle</Button>
+                  </a>
+                  {ESTADOS_PADRINO.filter((e) => e !== a.estado && e !== 'nueva').map((e) => (
+                    <Button key={e} size="sm" variant={e === 'activo' ? 'primary' : 'ghost'}
+                            disabled={ocupada === a.id} onClick={() => cambiar(a, e)}>
+                      {e === 'activo' ? 'Marcar activo' : e === 'cancelado' ? 'Cancelar' : 'En contacto'}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </article>
+          ))}
         </div>
       )}
     </div>

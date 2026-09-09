@@ -31,6 +31,7 @@ function App() {
   const { Contacto } = window.WebsiteScreens;
   const { SolicitudAdopcion } = window.WebsiteScreens;
   const { SolicitudAlianza } = window.WebsiteScreens;
+  const { SolicitudApadrinar } = window.WebsiteScreens;
   const { Button } = window.AdoptaUnOlvidadoDesignSystem_167478;
 
   function goProfile(dog) { setProfileDog(dog); setRoute('perfil'); }
@@ -44,6 +45,12 @@ function App() {
   function goSolicitud(dog) {
     setProfileDog(dog);
     setRoute('solicitud');
+    window.scrollTo({ top: 0 });
+  }
+
+  function goApadrinar(dog) {
+    setProfileDog(dog);
+    setRoute('apadrinar');
     window.scrollTo({ top: 0 });
   }
 
@@ -65,11 +72,12 @@ function App() {
       <main style={{ flex: 1 }}>
         {route === 'home' && <Home onSeeDog={goProfile} onNavigate={irA} />}
         {route === 'catalogo' && <Catalogo onSeeDog={goProfile} />}
-        {route === 'perfil' && <DogProfile dog={profileDog} onBack={() => setRoute('catalogo')} onAdoptar={goSolicitud} />}
+        {route === 'perfil' && <DogProfile dog={profileDog} onBack={() => setRoute('catalogo')} onAdoptar={goSolicitud} onApadrinar={goApadrinar} />}
         {route === 'solicitud' && <SolicitudAdopcion dog={profileDog} onBack={() => setRoute('perfil')} />}
         {route === 'historia' && <Historia />}
         {route === 'faq' && <FAQ />}
-        {route === 'apadrina' && <Apadrina />}
+        {route === 'apadrina' && <Apadrina onSeeDog={goProfile} onNavigate={irA} />}
+        {route === 'apadrinar' && <SolicitudApadrinar dog={profileDog} onBack={() => setRoute('perfil')} />}
         {route === 'voluntario' && <Voluntario />}
         {route === 'donar' && <Donar />}
         {route === 'historias' && <Historias onSeeDog={goProfile} onNavigate={setRoute} />}

@@ -29,6 +29,8 @@
       cambiarMiContrasena: falla,
       crearSolicitudAdopcion: falla, listSolicitudes: falla,
       cambiarEstadoSolicitud: falla, borrarSolicitud: falla,
+      crearSolicitudApadrinar: falla, listApadrinamientos: falla,
+      cambiarEstadoApadrinamiento: falla, borrarApadrinamiento: falla,
       crearSolicitudAlianza: falla, listAlianzas: falla,
       cambiarEstadoAlianza: falla, borrarAlianza: falla,
       onAuthChange: function () { return function () {}; },
@@ -264,6 +266,51 @@
           if (!filas || filas.length === 0) {
             throw new Error('No se pudo eliminar la solicitud. Vuelve a iniciar sesión.');
           }
+        });
+    },
+
+    // --- Apadrinamientos ----------------------------------------------------
+
+    crearSolicitudApadrinar: function (datos) {
+      return sb
+        .from('sponsorship_requests')
+        .insert(datos)
+        .then(function (res) {
+          if (res.error) throw new Error(traducirError(res.error));
+          return true;
+        });
+    },
+
+    listApadrinamientos: function () {
+      return sb
+        .from('sponsorship_requests')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .then(desempacar);
+    },
+
+    cambiarEstadoApadrinamiento: function (id, estado) {
+      return sb
+        .from('sponsorship_requests')
+        .update({ estado: estado })
+        .eq('id', id)
+        .select()
+        .then(desempacar)
+        .then(function (filas) {
+          if (!filas || filas.length === 0) throw new Error('No se pudo actualizar. Vuelve a iniciar sesión.');
+          return filas[0];
+        });
+    },
+
+    borrarApadrinamiento: function (id) {
+      return sb
+        .from('sponsorship_requests')
+        .delete()
+        .eq('id', id)
+        .select()
+        .then(desempacar)
+        .then(function (filas) {
+          if (!filas || filas.length === 0) throw new Error('No se pudo eliminar. Vuelve a iniciar sesión.');
         });
     },
 
