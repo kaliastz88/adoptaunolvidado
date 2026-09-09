@@ -1,9 +1,7 @@
 function Home({ onSeeDog, onNavigate }) {
   const { Button, DogCard, StatCounter } = window.AdoptaUnOlvidadoDesignSystem_167478;
-  const { Tabs, Modal } = window.AdoptaUnOlvidadoDesignSystem_167478;
+  const { Modal } = window.AdoptaUnOlvidadoDesignSystem_167478;
   const [open, setOpen] = React.useState(false);
-  const [mode, setMode] = React.useState('Mensual');
-  const [amount, setAmount] = React.useState('$150 MIL');
 
   const STORIES = [
     { name: 'Valiente', note: 'Rescatado de la calle. Hoy vive en un hogar con jardín.' },
@@ -75,17 +73,7 @@ function Home({ onSeeDog, onNavigate }) {
 
       <Modal open={open} onClose={() => setOpen(false)} title="¡Dona hoy!">
         <p style={{ font: 'var(--font-body-base)', color: 'var(--text-secondary)', marginBottom: 16 }}>"Un gesto tuyo puede ser el comienzo de su historia feliz."</p>
-        <Tabs options={['Dona una vez', 'Mensual']} value={mode} onChange={setMode} />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, margin: '18px 0' }}>
-          {['$50 MIL', '$100 MIL', '$150 MIL', '$200 MIL'].map((a) => (
-            <button key={a} onClick={() => setAmount(a)} style={{
-              padding: '14px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600,
-              border: amount === a ? '2px solid var(--action-sponsor)' : '1.5px solid var(--border-default)',
-              background: amount === a ? 'var(--amber-50)' : '#fff',
-            }}>{a} COP</button>
-          ))}
-        </div>
-        <Button variant="sponsor" style={{ width: '100%' }}>Dona hoy</Button>
+        <window.BloqueDonacion variante="sponsor" />
       </Modal>
     </div>
   );

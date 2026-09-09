@@ -244,6 +244,49 @@ redirección.
 
 ---
 
+## Donaciones
+
+Los montos y los enlaces de cobro viven en un solo archivo:
+[`ui_kits/website/pagos-config.js`](ui_kits/website/pagos-config.js). Ni la
+portada ni la página de Donar tienen nada escrito a mano, así que cambiar un
+monto es editar una línea.
+
+Los montos están en **MXN**: $100, $250, $500 y $1,000, con $250
+preseleccionado.
+
+**Ningún enlace está conectado todavía.** Mientras un enlace esté vacío, ese
+botón aparece desactivado con un aviso, en vez de fingir que funciona.
+
+### Conectar Mercado Pago
+
+Hay que crear ocho enlaces de cobro, uno por cada combinación de monto y
+frecuencia, y pegar cada URL en su lugar dentro de `pagos-config.js`.
+
+En Mercado Pago, para el donativo único: **Cobros** → **Link de pago** →
+**Crear link**, con monto fijo y descripción como "Donativo a Adopta un
+Olvidado". Para el mensual hay que usar **Suscripciones**, que no está
+habilitada en todas las cuentas. Si no aparece, deja los cuatro enlaces
+mensuales vacíos y el sitio lo explica solo.
+
+Los enlaces de Mercado Pago son públicos por diseño: son la dirección de una
+página de cobro, no una credencial. Es seguro que estén en el repositorio.
+
+### Nunca se piden tarjetas en este sitio
+
+El botón lleva a la página de Mercado Pago, que es quien está certificada para
+cobrar. Este sitio es estático, no tiene servidor y no cumple ninguna norma de
+manejo de datos de tarjeta. Si alguna vez alguien propone capturar el número de
+tarjeta aquí, la respuesta es no.
+
+### Pendientes fiscales
+
+La cuenta se abrió a nombre de una persona física, no de la organización. Ese
+dinero es legalmente ingreso de esa persona y Mercado Pago lo reporta al SAT.
+Conviene revisarlo con un contador. Tampoco se pueden emitir recibos deducibles
+mientras la organización no sea donataria autorizada.
+
+---
+
 ## Cómo funcionan las fotos
 
 La zona de arrastrar y soltar del formulario sube la imagen a Supabase Storage

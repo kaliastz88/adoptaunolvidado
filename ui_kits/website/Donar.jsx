@@ -1,7 +1,4 @@
 function Donar() {
-  const { Tabs, Button } = window.AdoptaUnOlvidadoDesignSystem_167478;
-  const [mode, setMode] = React.useState('Mensual');
-  const [amount, setAmount] = React.useState('$150 MIL');
   const IMPACT = [
     { icon: 'stethoscope', title: 'Atención veterinaria', body: 'Consultas, curaciones, vacunas y desparasitación para cada rescatado.' },
     { icon: 'bone', title: 'Alimentación diaria', body: 'Comida adecuada durante todo su proceso de recuperación.' },
@@ -16,17 +13,7 @@ function Donar() {
       </p>
       <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap', alignItems: 'flex-start' }}>
         <div style={{ flex: '1 1 340px', minWidth: 300, background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', padding: 28 }}>
-          <Tabs options={['Dona una vez', 'Mensual']} value={mode} onChange={setMode} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, margin: '20px 0' }}>
-            {['$50 MIL', '$100 MIL', '$150 MIL', '$200 MIL'].map((a) => (
-              <button key={a} onClick={() => setAmount(a)} style={{
-                padding: '16px', borderRadius: 'var(--radius-sm)', cursor: 'pointer', fontFamily: 'var(--font-body)', fontWeight: 600,
-                border: amount === a ? '2px solid var(--action-sponsor)' : '1.5px solid var(--border-default)',
-                background: amount === a ? 'var(--amber-50)' : '#fff',
-              }}>{a} COP</button>
-            ))}
-          </div>
-          <Button variant="cta" icon="heart" wag style={{ width: '100%' }}>Dona {amount} {mode === 'Mensual' ? 'al mes' : 'hoy'}</Button>
+          <window.BloqueDonacion variante="cta" />
         </div>
         <div style={{ flex: '1 1 320px', minWidth: 280, display: 'flex', flexDirection: 'column', gap: 14 }}>
           {IMPACT.map((i) => (
