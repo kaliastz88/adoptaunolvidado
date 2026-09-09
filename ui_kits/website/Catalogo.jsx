@@ -44,7 +44,7 @@ function Catalogo({ onSeeDog }) {
 
       <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end', flexWrap: 'wrap', background: '#fff', padding: 20, borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', marginBottom: 36 }}>
         <Select label="Especie" value={especie} onChange={(e) => setEspecie(e.target.value)} options={[TODAS_ESPECIES, 'Perro', 'Gato']} />
-        <Select label="Tamaño" value={tamano} onChange={(e) => setTamano(e.target.value)} options={[TODOS_TAMANOS, 'Pequeño', 'Mediano', 'Grande']} />
+        <Select label="Tamaño" value={tamano} onChange={(e) => setTamano(e.target.value)} options={[TODOS_TAMANOS, 'Pequeño', 'Pequeño-Mediano', 'Mediano', 'Mediano-Grande', 'Grande']} />
         <Button variant="ghost" icon="rotate-ccw" onClick={limpiar} disabled={!hayFiltro}>Limpiar filtros</Button>
       </div>
 

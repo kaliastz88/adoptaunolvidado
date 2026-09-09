@@ -64,6 +64,32 @@ function DogProfile({ dog, onBack, onAdoptar }) {
             {dog.compat ? <Badge tone="neutral">Compatible con {dog.compat.toLowerCase()}</Badge> : null}
           </div>
 
+          {/* Lo primero que pregunta quien va a adoptar: si está vacunado y
+              esterilizado, y si tiene alguna condición médica. Va antes de los
+              botones para que se lea sin tener que desplazarse. */}
+          {dog.salud || dog.estatus_medico ? (
+            <div style={{ background: 'var(--surface-alt)', borderRadius: 'var(--radius-sm)', padding: '18px 20px', margin: '0 0 24px' }}>
+              {dog.salud ? (
+                <div style={{ display: 'flex', gap: 10, marginBottom: dog.estatus_medico ? 12 : 0 }}>
+                  <i data-lucide="syringe" style={{ width: 18, height: 18, color: 'var(--action-primary)', flexShrink: 0, marginTop: 2 }} />
+                  <div>
+                    <div style={{ font: 'var(--font-2xs)', fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Protocolo de salud</div>
+                    <div style={{ font: 'var(--font-body-sm)', color: 'var(--text-primary)' }}>{dog.salud}</div>
+                  </div>
+                </div>
+              ) : null}
+              {dog.estatus_medico ? (
+                <div style={{ display: 'flex', gap: 10 }}>
+                  <i data-lucide="stethoscope" style={{ width: 18, height: 18, color: 'var(--action-primary)', flexShrink: 0, marginTop: 2 }} />
+                  <div>
+                    <div style={{ font: 'var(--font-2xs)', fontSize: 11, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Estatus médico</div>
+                    <div style={{ font: 'var(--font-body-sm)', color: 'var(--text-primary)' }}>{dog.estatus_medico}</div>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+
           <div style={{ display: 'flex', gap: 14 }}>
             <Button variant="primary" icon="heart" disabled={adoptado} onClick={() => onAdoptar(dog)}>
               {adoptado ? `${dog.name} ya fue adoptado` : `Adoptar a ${dog.name}`}

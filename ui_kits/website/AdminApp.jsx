@@ -1,13 +1,17 @@
 const SPECIES_OPTS = ['Perro', 'Gato'];
-const SIZE_OPTS = ['Pequeño', 'Mediano', 'Grande'];
+// Cinco niveles, no tres. Es lo que usa de verdad el equipo en su
+// presentación de adoptables, donde abundan los 'Mediano-Grande' y los
+// 'Media-Alta'. Con solo tres opciones habría que redondear y se perdería
+// información real de cada perro.
+const SIZE_OPTS = ['Pequeño', 'Pequeño-Mediano', 'Mediano', 'Mediano-Grande', 'Grande'];
 const STATUS_OPTS = ['Disponible', 'En proceso', 'Adoptado'];
-const ENERGY_OPTS = ['Baja', 'Media', 'Alta'];
+const ENERGY_OPTS = ['Baja', 'Media-Baja', 'Media', 'Media-Alta', 'Alta'];
 
 function emptyForm() {
   return {
     id: null, name: '', species: 'Perro', age: '', size: 'Mediano',
     status: 'Disponible', energy: 'Media', compat: '', bio: '',
-    photo: '', photo_path: '',
+    salud: '', estatus_medico: '', photo: '', photo_path: '',
   };
 }
 
@@ -861,6 +865,8 @@ function AnimalFormModal({ open, form, setForm, onClose, onSave, guardando, erro
         </div>
         <Select label="Estado de adopción" value={form.status} onChange={(e) => set('status', e.target.value)} options={STATUS_OPTS} />
         <Input label="Compatibilidad" placeholder="Ej. Niños, otros perros" value={form.compat} onChange={(e) => set('compat', e.target.value)} />
+        <Input label="Protocolo de salud" placeholder="Ej. Completo con vacunación y esterilización" value={form.salud} onChange={(e) => set('salud', e.target.value)} />
+        <Input label="Estatus médico" placeholder="Ej. Saludable" value={form.estatus_medico} onChange={(e) => set('estatus_medico', e.target.value)} />
 
         <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--text-primary)' }}>Biografía</span>
