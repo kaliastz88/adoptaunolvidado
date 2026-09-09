@@ -1,4 +1,4 @@
-function DogProfile({ dog, onBack }) {
+function DogProfile({ dog, onBack, onAdoptar }) {
   const { Button, Badge } = window.AdoptaUnOlvidadoDesignSystem_167478;
 
   React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
@@ -65,7 +65,7 @@ function DogProfile({ dog, onBack }) {
           </div>
 
           <div style={{ display: 'flex', gap: 14 }}>
-            <Button variant="primary" icon="heart" disabled={adoptado}>
+            <Button variant="primary" icon="heart" disabled={adoptado} onClick={() => onAdoptar(dog)}>
               {adoptado ? `${dog.name} ya fue adoptado` : `Adoptar a ${dog.name}`}
             </Button>
             <Button variant="sponsor" icon="hand-heart">Apadrinar</Button>

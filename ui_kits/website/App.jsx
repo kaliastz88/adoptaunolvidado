@@ -29,9 +29,18 @@ function App() {
   const { Historias } = window.WebsiteScreens;
   const { Aliados } = window.WebsiteScreens;
   const { Contacto } = window.WebsiteScreens;
+  const { SolicitudAdopcion } = window.WebsiteScreens;
   const { Button } = window.AdoptaUnOlvidadoDesignSystem_167478;
 
   function goProfile(dog) { setProfileDog(dog); setRoute('perfil'); }
+
+  // La solicitud arranca arriba del todo: es una pantalla larga y llegar a la
+  // mitad del formulario porque la anterior venía con scroll desorienta.
+  function goSolicitud(dog) {
+    setProfileDog(dog);
+    setRoute('solicitud');
+    window.scrollTo({ top: 0 });
+  }
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--surface-page)', display: 'flex', flexDirection: 'column' }}>
@@ -51,7 +60,8 @@ function App() {
       <main style={{ flex: 1 }}>
         {route === 'home' && <Home onSeeDog={goProfile} onNavigate={setRoute} />}
         {route === 'catalogo' && <Catalogo onSeeDog={goProfile} />}
-        {route === 'perfil' && <DogProfile dog={profileDog} onBack={() => setRoute('catalogo')} />}
+        {route === 'perfil' && <DogProfile dog={profileDog} onBack={() => setRoute('catalogo')} onAdoptar={goSolicitud} />}
+        {route === 'solicitud' && <SolicitudAdopcion dog={profileDog} onBack={() => setRoute('perfil')} />}
         {route === 'historia' && <Historia />}
         {route === 'faq' && <FAQ />}
         {route === 'apadrina' && <Apadrina />}

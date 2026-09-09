@@ -26,6 +26,8 @@
       uploadPhoto: falla, deletePhoto: falla,
       signIn: falla, signUp: falla, signOut: falla, getSession: falla,
       miAcceso: falla, listPanelUsers: falla, decidirAcceso: falla,
+      crearSolicitudAdopcion: falla, listSolicitudes: falla,
+      cambiarEstadoSolicitud: falla, borrarSolicitud: falla,
       onAuthChange: function () { return function () {}; },
     };
   }
@@ -188,6 +190,63 @@
       return sb.auth.getSession().then(function (res) {
         return res.data ? res.data.session : null;
       });
+    },
+
+    // --- Solicitudes de adopción -------------------------------------------
+
+    // La manda cualquier visitante, sin cuenta.
+    //
+    // Sin .select() a propósito. El público tiene permiso de escribir pero no de
+    // leer esta tabla, porque cada fila trae datos personales de alguien. Pedir
+    // de vuelta la fila insertada haría fallar el envío por falta de permiso de
+    // lectura, justo cuando en realidad se guardó bien.
+    crearSolicitudAdopcion: function (datos) {
+      return sb
+        .from('adoption_requests')
+        .insert(datos)
+        .then(function (res) {
+          if (res.error) throw new Error(traducirError(res.error));
+          return true;
+        });
+    },
+
+    listSolicitudes: function () {
+      return sb
+        .from('adoption_requests')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .then(desempacar);
+    },
+
+    cambiarEstadoSolicitud: function (id, estado, notas) {
+      var cambios = { estado: estado };
+      if (typeof notas === 'string') cambios.notas = notas;
+      return sb
+        .from('adoption_requests')
+        .update(cambios)
+        .eq('id', id)
+        .select()
+        .then(desempacar)
+        .then(function (filas) {
+          if (!filas || filas.length === 0) {
+            throw new Error('No se pudo actualizar la solicitud. Vuelve a iniciar sesión.');
+          }
+          return filas[0];
+        });
+    },
+
+    borrarSolicitud: function (id) {
+      return sb
+        .from('adoption_requests')
+        .delete()
+        .eq('id', id)
+        .select()
+        .then(desempacar)
+        .then(function (filas) {
+          if (!filas || filas.length === 0) {
+            throw new Error('No se pudo eliminar la solicitud. Vuelve a iniciar sesión.');
+          }
+        });
     },
 
     // --- Personas del panel -----------------------------------------------

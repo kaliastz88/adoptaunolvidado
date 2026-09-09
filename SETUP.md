@@ -122,6 +122,41 @@ los avisos. Sin un dominio propio verificado, el remitente de prueba
 avisarle a varias personas hay que verificar un dominio en Resend y cambiar el
 remitente por una dirección de ese dominio.
 
+## 2c. Solicitudes de adopción
+
+Corre [`supabase/solicitudes-de-adopcion.sql`](supabase/solicitudes-de-adopcion.sql)
+en el **SQL Editor**, después de los archivos anteriores.
+
+En el sitio, el botón **Adoptar** de la ficha de cada perro abre un cuestionario
+de veinticinco preguntas. Al enviarlo, la solicitud aparece en la pestaña
+**Solicitudes** del panel y le llega un aviso por correo al equipo.
+
+Esta tabla funciona al revés que las demás. Cualquiera puede **escribir** en ella
+sin tener cuenta, porque el formulario es público, pero **nadie de fuera puede
+leerla**, porque cada fila trae nombre, teléfono y correo de una persona real.
+
+Eso tiene una consecuencia al programar contra ella: un `insert` que pida de
+vuelta la fila insertada falla, porque el público no tiene permiso de lectura. Hay
+que insertar sin `.select()`.
+
+### Cambiar las preguntas
+
+Las preguntas están declaradas como datos, no repartidas por el código. Para
+agregar, quitar o reordenar una hay que tocar tres lugares:
+
+1. La columna en `supabase/solicitudes-de-adopcion.sql`
+2. La lista `SECCIONES` en `ui_kits/website/SolicitudAdopcion.jsx`
+3. La lista `PREGUNTAS` en `ui_kits/website/AdminApp.jsx`, o el panel no la muestra
+
+El nombre del campo tiene que ser idéntico en los tres.
+
+### Sobre solicitudes falsas
+
+El formulario es público a propósito, así que cualquiera puede enviar solicitudes
+inventadas. Hay límites de tamaño para que nadie vuelque texto enorme, pero no
+limitan la cantidad. Si algún día llega basura en volumen, la solución es agregar
+una verificación tipo captcha, y eso necesita una Edge Function.
+
 ### Por qué no hay confirmación por correo
 
 El permiso lo da la aprobación de la dueña, no el correo, así que confirmar la
@@ -238,6 +273,9 @@ elegir un archivo, o pegar una imagen con `Ctrl+V`.
 | ------- | -------- |
 | `supabase/schema.sql` | tabla, bucket, políticas de seguridad y datos de ejemplo |
 | `supabase/usuarios-del-panel.sql` | registro con aprobación, roles y las políticas que exigen estar aprobado |
+| `supabase/aviso-por-correo.sql` | envío de correos desde la base con pg_net y Resend |
+| `supabase/solicitudes-de-adopcion.sql` | tabla de solicitudes, sus políticas y el aviso al equipo |
+| `ui_kits/website/SolicitudAdopcion.jsx` | el cuestionario público de adopción |
 | `ui_kits/website/supabase-config.js` | la URL y la clave anon de tu proyecto |
 | `ui_kits/website/dataClient.js` | única capa que habla con Supabase, expone `window.db` |
 | `ui_kits/website/PhotoDropzone.jsx` | la zona de arrastrar y soltar |

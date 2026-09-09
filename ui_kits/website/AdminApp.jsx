@@ -253,8 +253,14 @@ function AdminPanel({ acceso }) {
   // La pestaña de usuarios solo existe para quien puede decidir accesos. No es
   // la protección real, que está en las políticas de la base: es evitar mostrar
   // una sección que de todos modos no funcionaría.
+  //
+  // Las solicitudes de adopción, en cambio, las ve cualquiera con acceso
+  // aprobado: revisar quién quiere adoptar es el trabajo de todo el equipo.
   const esOwner = acceso.role === 'owner';
   const [seccion, setSeccion] = React.useState('Animales');
+  const [nuevasSolicitudes, setNuevasSolicitudes] = React.useState(0);
+
+  const PESTANAS = esOwner ? ['Animales', 'Solicitudes', 'Usuarios'] : ['Animales', 'Solicitudes'];
 
   const [animals, setAnimals] = React.useState([]);
   const [cargando, setCargando] = React.useState(true);
@@ -295,6 +301,16 @@ function AdminPanel({ acceso }) {
   }, []);
 
   React.useEffect(() => { recargar(); }, [recargar]);
+
+  // El aviso de solicitudes sin revisar se cuenta al entrar, no al abrir la
+  // pestaña, porque su razón de ser es que se note sin tener que ir a buscarlo.
+  React.useEffect(() => {
+    let vivo = true;
+    window.db.listSolicitudes()
+      .then((s) => { if (vivo) setNuevasSolicitudes(s.filter((x) => x.estado === 'nueva').length); })
+      .catch(() => {});
+    return () => { vivo = false; };
+  }, []);
 
   function openNew() {
     setForm(emptyForm());
@@ -396,13 +412,17 @@ function AdminPanel({ acceso }) {
       </header>
 
       <main style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 48px' }}>
-        {esOwner ? (
-          <div style={{ marginBottom: 28 }}>
-            <Tabs options={['Animales', 'Usuarios']} value={seccion} onChange={setSeccion} />
-          </div>
-        ) : null}
+        <div style={{ marginBottom: 28, display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <Tabs options={PESTANAS} value={seccion} onChange={setSeccion} />
+          {nuevasSolicitudes > 0 && seccion !== 'Solicitudes' ? (
+            <Badge tone="warning" icon="mail">
+              {nuevasSolicitudes === 1 ? '1 solicitud sin revisar' : `${nuevasSolicitudes} solicitudes sin revisar`}
+            </Badge>
+          ) : null}
+        </div>
 
-        {esOwner && seccion === 'Usuarios' ? <SeccionUsuarios yo={acceso} /> : (
+        {seccion === 'Usuarios' && esOwner ? <SeccionUsuarios yo={acceso} />
+        : seccion === 'Solicitudes' ? <SeccionSolicitudes onContarNuevas={setNuevasSolicitudes} /> : (
         <React.Fragment>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 20, flexWrap: 'wrap', marginBottom: 28 }}>
           <div>
@@ -478,6 +498,184 @@ function AdminPanel({ acceso }) {
         onCancel={() => setDeleteTarget(null)}
         onConfirm={doDelete}
       />
+    </div>
+  );
+}
+
+// =============================================================================
+// Solicitudes de adopción
+//
+// Las preguntas se declaran aquí igual que en el formulario público, para poder
+// mostrarlas con su texto completo. Si se agrega una pregunta allá, hay que
+// agregarla también en esta lista o no se verá en el panel.
+// =============================================================================
+
+const PREGUNTAS = [
+  ['Tus datos', [
+    ['edad', 'Edad'], ['ciudad', 'Ciudad y estado'],
+  ]],
+  ['Vivienda', [
+    ['vivienda', '¿Dónde vive?'], ['propiedad', '¿Propia o rentada?'],
+    ['permiso_renta', '¿Le permiten mascotas?'], ['patio', '¿Patio o jardín?'],
+    ['protegido', '¿Ventanas y bardas protegidas?'],
+  ]],
+  ['Quiénes viven ahí', [
+    ['personas', '¿Cuántas personas?'], ['ninos', '¿Niños y edades?'],
+    ['acuerdo', '¿Todos de acuerdo?'], ['alergias', '¿Alergias?'],
+  ]],
+  ['Otras mascotas', [
+    ['otras_mascotas', '¿Qué mascotas tiene?'], ['esterilizadas', '¿Esterilizadas y vacunadas?'],
+    ['mascotas_antes', '¿Mascotas antes y qué pasó?'],
+  ]],
+  ['Compromiso', [
+    ['responsable', '¿Quién se hará cargo?'], ['horas_solo', '¿Horas solo al día?'],
+    ['donde_duerme', '¿Dónde dormiría?'], ['si_te_mudas', '¿Si se muda o viaja?'],
+    ['gastos', '¿Puede cubrir gastos?'], ['esteriliza', '¿Se compromete a esterilizar?'],
+    ['seguimiento', '¿Acepta seguimiento?'], ['motivo', '¿Por qué quiere adoptarlo?'],
+  ]],
+];
+
+const ESTADOS_SOLICITUD = ['nueva', 'en revisión', 'aprobada', 'rechazada'];
+
+function SeccionSolicitudes({ onContarNuevas }) {
+  const { Button, Select, Badge } = window.AdoptaUnOlvidadoDesignSystem_167478;
+  const [solicitudes, setSolicitudes] = React.useState([]);
+  const [cargando, setCargando] = React.useState(true);
+  const [error, setError] = React.useState('');
+  const [abierta, setAbierta] = React.useState(null);
+  const [filtro, setFiltro] = React.useState('Todas');
+  const [ocupada, setOcupada] = React.useState('');
+
+  React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
+
+  const recargar = React.useCallback(async () => {
+    setCargando(true);
+    setError('');
+    try {
+      const filas = await window.db.listSolicitudes();
+      setSolicitudes(filas);
+      onContarNuevas(filas.filter((s) => s.estado === 'nueva').length);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setCargando(false);
+    }
+  }, [onContarNuevas]);
+
+  React.useEffect(() => { recargar(); }, [recargar]);
+
+  async function cambiarEstado(s, estado) {
+    setOcupada(s.id);
+    setError('');
+    try {
+      await window.db.cambiarEstadoSolicitud(s.id, estado);
+      await recargar();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setOcupada('');
+    }
+  }
+
+  const tono = (e) => (e === 'aprobada' ? 'success' : e === 'nueva' ? 'warning' : e === 'rechazada' ? 'neutral' : 'info');
+  const visibles = filtro === 'Todas' ? solicitudes : solicitudes.filter((s) => s.estado === filtro);
+
+  if (cargando) {
+    return <p style={{ font: 'var(--font-body-base)', color: 'var(--text-muted)' }}>Cargando solicitudes...</p>;
+  }
+
+  return (
+    <div>
+      <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-primary)', textTransform: 'uppercase' }}>Adopta un Olvidado · Admin</span>
+      <h1 style={{ font: 'var(--font-h2)', color: 'var(--text-primary)', margin: '8px 0 6px' }}>Quién quiere adoptar</h1>
+      <p style={{ font: 'var(--font-body-base)', color: 'var(--text-secondary)', marginBottom: 24 }}>
+        Cada solicitud llega desde la ficha de un perro en el sitio. Los datos son personales,
+        así que solo los ve el equipo con acceso aprobado.
+      </p>
+
+      {error ? (
+        <div style={{ background: 'var(--terracotta-50)', border: '1px solid var(--terracotta-500)', color: 'var(--terracotta-600)', borderRadius: 'var(--radius-sm)', padding: '14px 18px', marginBottom: 20, font: 'var(--font-body-sm)' }}>
+          {error}
+        </div>
+      ) : null}
+
+      <div style={{ marginBottom: 24, maxWidth: 260 }}>
+        <Select label="Filtrar por estado" value={filtro} onChange={(e) => setFiltro(e.target.value)}
+                options={['Todas', ...ESTADOS_SOLICITUD]} />
+      </div>
+
+      {visibles.length === 0 ? (
+        <div style={{ background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', padding: '48px 24px', textAlign: 'center', color: 'var(--text-muted)' }}>
+          {solicitudes.length === 0
+            ? 'Todavía no hay solicitudes. Aparecerán aquí en cuanto alguien llene el formulario desde el sitio.'
+            : 'Ninguna solicitud con ese estado.'}
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {visibles.map((s) => {
+            const expandida = abierta === s.id;
+            return (
+              <article key={s.id} style={{ background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', overflow: 'hidden' }}>
+                <div
+                  onClick={() => setAbierta(expandida ? null : s.id)}
+                  style={{ padding: '20px 24px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}
+                >
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                      <span style={{ font: 'var(--font-h4)', color: 'var(--text-primary)' }}>{s.nombre}</span>
+                      <Badge tone={tono(s.estado)}>{s.estado}</Badge>
+                    </div>
+                    <div style={{ font: 'var(--font-body-sm)', color: 'var(--text-secondary)', marginTop: 4 }}>
+                      Quiere adoptar a <b>{s.animal_nombre || 'un animal'}</b> · {new Date(s.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    </div>
+                    <div style={{ font: 'var(--font-body-sm)', color: 'var(--text-muted)', marginTop: 2 }}>
+                      {s.correo} · {s.telefono}
+                    </div>
+                  </div>
+                  <span style={{ font: 'var(--font-body-sm)', fontWeight: 600, color: 'var(--action-primary)' }}>
+                    {expandida ? 'Cerrar' : 'Ver respuestas'}
+                  </span>
+                </div>
+
+                {expandida ? (
+                  <div style={{ borderTop: '1px solid var(--border-subtle)', padding: '24px', background: 'var(--surface-alt)' }}>
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 24 }}>
+                      <a href={`mailto:${s.correo}`} style={{ textDecoration: 'none' }}>
+                        <Button size="sm" variant="secondary" icon="mail">Escribirle</Button>
+                      </a>
+                      <a href={`tel:${s.telefono.replace(/\s/g, '')}`} style={{ textDecoration: 'none' }}>
+                        <Button size="sm" variant="secondary" icon="phone">Llamarle</Button>
+                      </a>
+                      {ESTADOS_SOLICITUD.filter((e) => e !== s.estado && e !== 'nueva').map((e) => (
+                        <Button key={e} size="sm" variant={e === 'aprobada' ? 'primary' : 'ghost'}
+                                disabled={ocupada === s.id} onClick={() => cambiarEstado(s, e)}>
+                          Marcar como {e}
+                        </Button>
+                      ))}
+                    </div>
+
+                    {PREGUNTAS.map(([grupo, campos]) => (
+                      <div key={grupo} style={{ marginBottom: 20 }}>
+                        <h3 style={{ font: 'var(--font-caption)', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase', margin: '0 0 10px' }}>{grupo}</h3>
+                        <dl style={{ margin: 0, display: 'grid', gridTemplateColumns: 'minmax(180px, 260px) 1fr', gap: '8px 20px' }}>
+                          {campos.map(([campo, pregunta]) => (
+                            <React.Fragment key={campo}>
+                              <dt style={{ font: 'var(--font-body-sm)', color: 'var(--text-muted)' }}>{pregunta}</dt>
+                              <dd style={{ margin: 0, font: 'var(--font-body-sm)', color: 'var(--text-primary)', whiteSpace: 'pre-wrap' }}>
+                                {s[campo] ? s[campo] : <span style={{ color: 'var(--text-muted)' }}>sin contestar</span>}
+                              </dd>
+                            </React.Fragment>
+                          ))}
+                        </dl>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </article>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
