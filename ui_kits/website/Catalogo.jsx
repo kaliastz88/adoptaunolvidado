@@ -69,6 +69,7 @@ function Catalogo({ onSeeDog }) {
               age={d.age}
               size={d.size}
               photo={d.photo}
+              photoPos={d.photo_pos}
               tone={d.status === 'Adoptado' ? 'adopted' : 'available'}
               onClick={() => onSeeDog(d)}
             />

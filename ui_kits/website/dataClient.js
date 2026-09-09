@@ -72,7 +72,7 @@
   // Las columnas que existen en la tabla. El formulario del panel arrastra
   // campos extra (id nulo al crear, etc.) que Postgres rechazaría.
   var CAMPOS = ['name', 'species', 'age', 'size', 'status', 'energy', 'compat', 'bio',
-              'salud', 'estatus_medico', 'photo', 'photo_path'];
+              'salud', 'estatus_medico', 'photo', 'photo_path', 'photo_pos'];
 
   function soloCamposDeTabla(form) {
     var fila = {};

@@ -34,7 +34,7 @@ function DogProfile({ dog, onBack, onAdoptar }) {
           width: 380, height: 420, borderRadius: 'var(--radius-card)', flexShrink: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--blue-500)',
           background: dog.photo
-            ? `center/cover no-repeat url(${dog.photo})`
+            ? `${dog.photo_pos || 'center'}/cover no-repeat url(${dog.photo})`
             : 'linear-gradient(150deg, var(--blue-100), var(--terracotta-50))',
         }}>
           {!dog.photo ? <i data-lucide={esGato ? 'cat' : 'dog'} style={{ width: 56, height: 56 }} /> : null}

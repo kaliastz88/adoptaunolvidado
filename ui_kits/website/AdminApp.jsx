@@ -461,7 +461,7 @@ function AdminPanel({ acceso }) {
           ) : filtered.map((a) => (
             <div key={a.id} style={{ display: 'grid', gridTemplateColumns: COLUMNAS, gap: 12, padding: '16px 24px', borderTop: '1px solid var(--border-subtle)', alignItems: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 'var(--radius-pill)', background: 'var(--blue-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, backgroundImage: a.photo ? `url(${a.photo})` : 'none', backgroundSize: 'cover', backgroundPosition: 'center' }}>
+                <div style={{ width: 36, height: 36, borderRadius: 'var(--radius-pill)', background: 'var(--blue-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, backgroundImage: a.photo ? `url(${a.photo})` : 'none', backgroundSize: 'cover', backgroundPosition: a.photo_pos || 'center' }}>
                   {!a.photo ? <i data-lucide={a.species === 'Gato' ? 'cat' : 'dog'} style={{ width: 18, height: 18, color: 'var(--blue-500)' }} /> : null}
                 </div>
                 <span style={{ fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis' }}>{a.name}</span>
@@ -851,7 +851,7 @@ function AnimalFormModal({ open, form, setForm, onClose, onSave, guardando, erro
 
         <PhotoDropzone
           value={form}
-          onChange={(foto) => setForm((f) => ({ ...f, photo: foto.photo, photo_path: foto.photo_path }))}
+          onChange={(foto) => setForm((f) => ({ ...f, ...foto }))}
           onUploadedPath={onUploadedPath}
         />
 

@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"AdoptaUnOlvidadoDesignSystem_167478","components":[{"name":"Badge","sourcePath":"components/core/Badge.jsx"},{"name":"Button","sourcePath":"components/core/Button.jsx"},{"name":"IconButton","sourcePath":"components/core/IconButton.jsx"},{"name":"DogCard","sourcePath":"components/data/DogCard.jsx"},{"name":"StatCounter","sourcePath":"components/data/StatCounter.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"Input","sourcePath":"components/forms/Input.jsx"},{"name":"Select","sourcePath":"components/forms/Select.jsx"},{"name":"Accordion","sourcePath":"components/overlay/Accordion.jsx"},{"name":"Modal","sourcePath":"components/overlay/Modal.jsx"},{"name":"Tabs","sourcePath":"components/overlay/Tabs.jsx"}],"sourceHashes":{"components/core/Badge.jsx":"42931f7fc804","components/core/Button.jsx":"066d6fd6a383","components/core/IconButton.jsx":"f62ee0900bbb","components/data/DogCard.jsx":"21f816fc2db0","components/data/StatCounter.jsx":"d61b20900747","components/forms/Checkbox.jsx":"f44a7ebd24b4","components/forms/Input.jsx":"e349d622f881","components/forms/Select.jsx":"5d39d43b6d72","components/overlay/Accordion.jsx":"365ca1d97847","components/overlay/Modal.jsx":"c36bd93d15aa","components/overlay/Tabs.jsx":"0de7afa46bfa","ui_kits/website/AdminApp.jsx":"f28715881a9d","ui_kits/website/Aliados.jsx":"38792bd4b37f","ui_kits/website/Apadrina.jsx":"6b364fa54a37","ui_kits/website/App.jsx":"ad0a6f555428","ui_kits/website/Catalogo.jsx":"4804d5b1cfe5","ui_kits/website/Contacto.jsx":"7d79155f1a73","ui_kits/website/DogProfile.jsx":"446d27013099","ui_kits/website/Donar.jsx":"1b7ed4c2b4d6","ui_kits/website/FAQ.jsx":"c9cd19adebb8","ui_kits/website/Historia.jsx":"c4658f05e86b","ui_kits/website/Historias.jsx":"c62990ea33b4","ui_kits/website/Home.jsx":"c295d0f465fa","ui_kits/website/Voluntario.jsx":"4b57f7c76e20"},"inlinedExternals":[],"unexposedExports":[]} */
+/* @ds-bundle: {"format":4,"namespace":"AdoptaUnOlvidadoDesignSystem_167478","components":[{"name":"Badge","sourcePath":"components/core/Badge.jsx"},{"name":"Button","sourcePath":"components/core/Button.jsx"},{"name":"IconButton","sourcePath":"components/core/IconButton.jsx"},{"name":"DogCard","sourcePath":"components/data/DogCard.jsx"},{"name":"StatCounter","sourcePath":"components/data/StatCounter.jsx"},{"name":"Checkbox","sourcePath":"components/forms/Checkbox.jsx"},{"name":"Input","sourcePath":"components/forms/Input.jsx"},{"name":"Select","sourcePath":"components/forms/Select.jsx"},{"name":"Accordion","sourcePath":"components/overlay/Accordion.jsx"},{"name":"Modal","sourcePath":"components/overlay/Modal.jsx"},{"name":"Tabs","sourcePath":"components/overlay/Tabs.jsx"}],"sourceHashes":{"components/core/Badge.jsx":"42931f7fc804","components/core/Button.jsx":"066d6fd6a383","components/core/IconButton.jsx":"f62ee0900bbb","components/data/DogCard.jsx":"348f39cf7069","components/data/StatCounter.jsx":"d61b20900747","components/forms/Checkbox.jsx":"f44a7ebd24b4","components/forms/Input.jsx":"e349d622f881","components/forms/Select.jsx":"5d39d43b6d72","components/overlay/Accordion.jsx":"365ca1d97847","components/overlay/Modal.jsx":"c36bd93d15aa","components/overlay/Tabs.jsx":"0de7afa46bfa","ui_kits/website/AdminApp.jsx":"f28715881a9d","ui_kits/website/Aliados.jsx":"38792bd4b37f","ui_kits/website/Apadrina.jsx":"6b364fa54a37","ui_kits/website/App.jsx":"ad0a6f555428","ui_kits/website/Catalogo.jsx":"4804d5b1cfe5","ui_kits/website/Contacto.jsx":"7d79155f1a73","ui_kits/website/DogProfile.jsx":"446d27013099","ui_kits/website/Donar.jsx":"1b7ed4c2b4d6","ui_kits/website/FAQ.jsx":"c9cd19adebb8","ui_kits/website/Historia.jsx":"c4658f05e86b","ui_kits/website/Historias.jsx":"c62990ea33b4","ui_kits/website/Home.jsx":"c295d0f465fa","ui_kits/website/Voluntario.jsx":"4b57f7c76e20"},"inlinedExternals":[],"unexposedExports":[]} */
 
 (() => {
 
@@ -213,6 +213,7 @@ function DogCard({
   age,
   size,
   photo,
+  photoPos = 'center',
   tone = 'available',
   onClick
 }) {
@@ -235,7 +236,7 @@ function DogCard({
   }, /*#__PURE__*/React.createElement("div", {
     style: {
       height: 200,
-      background: photo ? `center/cover no-repeat url(${photo})` : 'var(--blue-100)',
+      background: photo ? `${photoPos}/cover no-repeat url(${photo})` : 'var(--blue-100)',
       display: photo ? 'block' : 'flex',
       alignItems: 'center',
       justifyContent: 'center'

@@ -1,6 +1,9 @@
 import React from 'react';
 
-export function DogCard({ name, age, size, photo, tone = 'available', onClick }) {
+// photoPos es un valor de background-position, por ejemplo '50% 25%'.
+// Sin él, la tarjeta recorta siempre desde el centro y en las fotos verticales
+// eso corta justo la cara del perro, que es lo único que importa de la foto.
+export function DogCard({ name, age, size, photo, photoPos = 'center', tone = 'available', onClick }) {
   const [hover, setHover] = React.useState(false);
   return (
     <div
@@ -22,7 +25,7 @@ export function DogCard({ name, age, size, photo, tone = 'available', onClick })
       <div
         style={{
           height: 200,
-          background: photo ? `center/cover no-repeat url(${photo})` : 'var(--blue-100)',
+          background: photo ? `${photoPos}/cover no-repeat url(${photo})` : 'var(--blue-100)',
           display: photo ? 'block' : 'flex',
           alignItems: 'center',
           justifyContent: 'center',

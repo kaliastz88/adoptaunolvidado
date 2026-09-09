@@ -12,10 +12,20 @@
 // cancelaste.
 //
 // Props:
-//   value          { photo, photo_path } del formulario
-//   onChange       recibe { photo, photo_path } cuando cambia la foto
+//   value          { photo, photo_path, photo_pos } del formulario
+//   onChange       recibe los campos de foto que cambiaron
 //   onUploadedPath se llama con la ruta de cada archivo recién subido, para que
 //                  el padre pueda borrarlo si al final cancelas
+//
+// SOBRE EL ENCUADRE:
+// La tarjeta del catálogo recorta la foto a un rectángulo apaisado. Casi todas
+// las fotos vienen del celular y son verticales, así que recortar desde el
+// centro corta la cara del perro. Aquí se puede arrastrar la imagen para elegir
+// qué parte se ve.
+//
+// No se recorta el archivo: se guarda dónde mirar. Recortar destruiría el resto
+// de la foto y el error sería irreversible; guardar el punto de enfoque se
+// puede corregir siempre.
 // =============================================================================
 
 // Íconos en SVG en vez de <i data-lucide>. Lucide reemplaza el nodo <i> por un
@@ -48,6 +58,12 @@ function PhotoDropzone({ value, onChange, onUploadedPath }) {
   const [uploading, setUploading] = React.useState(false);
   const [error, setError] = React.useState('');
   const [preview, setPreview] = React.useState('');
+
+  // Encuadre: se guarda como par de porcentajes, igual que background-position.
+  const pos = (value && value.photo_pos) || '50% 50%';
+  const [px, py] = pos.split(/\s+/).map((v) => parseFloat(v) || 50);
+  const [arrastrando, setArrastrando] = React.useState(false);
+  const marcoRef = React.useRef(null);
 
   const inputRef = React.useRef(null);
   // Un contador en vez de un booleano: al arrastrar sobre un elemento hijo el
@@ -95,7 +111,7 @@ function PhotoDropzone({ value, onChange, onUploadedPath }) {
     try {
       const subida = await window.db.uploadPhoto(file);
       if (onUploadedPath) onUploadedPath(subida.photo_path);
-      onChange(subida);
+      onChange({ ...subida, photo_pos: '50% 50%' });
       // A partir de aquí manda la URL real de Supabase, así que soltamos la local.
       liberarPreview();
       setPreview('');
@@ -146,7 +162,34 @@ function PhotoDropzone({ value, onChange, onUploadedPath }) {
     liberarPreview();
     setPreview('');
     setError('');
-    onChange({ photo: '', photo_path: '' });
+    onChange({ photo: '', photo_path: '', photo_pos: '50% 50%' });
+  }
+
+  // Se apunta a lo que se quiere ver: donde caiga el dedo o el cursor, ese es el
+  // punto de enfoque. La alternativa era arrastrar la imagen como un mapa, que
+  // se siente mejor pero obliga a rastrear el desplazamiento y a lidiar con los
+  // bordes. Apuntar es más directo y con fotos de perros basta.
+  function moverEncuadre(e) {
+    const marco = marcoRef.current;
+    if (!marco) return;
+    const r = marco.getBoundingClientRect();
+    const nx = Math.min(100, Math.max(0, ((e.clientX - r.left) / r.width) * 100));
+    const ny = Math.min(100, Math.max(0, ((e.clientY - r.top) / r.height) * 100));
+    onChange({ photo_pos: `${Math.round(nx)}% ${Math.round(ny)}%` });
+  }
+
+  function iniciarArrastre(e) {
+    if (!tieneFoto || uploading) return;
+    e.preventDefault();
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setArrastrando(true);
+    moverEncuadre(e);
+  }
+
+  function centrar(e) {
+    e.stopPropagation();
+    onChange({ photo_pos: '50% 50%' });
   }
 
   const borde = error
@@ -164,19 +207,35 @@ function PhotoDropzone({ value, onChange, onUploadedPath }) {
       </span>
 
       <div
+        ref={marcoRef}
         onClick={tieneFoto ? undefined : abrirSelector}
         onDrop={onDrop}
         onDragEnter={onDragEnter}
         onDragLeave={onDragLeave}
         onDragOver={onDragOver}
         onPaste={onPaste}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); abrirSelector(); } }}
+        onPointerDown={iniciarArrastre}
+        onPointerMove={(e) => { if (arrastrando) moverEncuadre(e); }}
+        onPointerUp={() => setArrastrando(false)}
+        onPointerCancel={() => setArrastrando(false)}
+        onKeyDown={(e) => {
+          if (!tieneFoto && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); abrirSelector(); return; }
+          // Con foto, las flechas mueven el encuadre. Es la única forma de
+          // ajustarlo sin ratón.
+          const paso = 5;
+          const mover = { ArrowUp: [0, -paso], ArrowDown: [0, paso], ArrowLeft: [-paso, 0], ArrowRight: [paso, 0] }[e.key];
+          if (tieneFoto && mover) {
+            e.preventDefault();
+            onChange({ photo_pos: `${Math.min(100, Math.max(0, px + mover[0]))}% ${Math.min(100, Math.max(0, py + mover[1]))}%` });
+          }
+        }}
         tabIndex={0}
         role="button"
-        aria-label={tieneFoto ? 'Reemplazar la foto de la mascota' : 'Subir la foto de la mascota'}
+        aria-label={tieneFoto ? 'Arrastra para encuadrar la foto, o usa las flechas' : 'Subir la foto de la mascota'}
         style={{
           position: 'relative',
-          height: 180,
+          aspectRatio: '260 / 200',
+          minHeight: 160,
           borderRadius: 'var(--radius-input)',
           border: `2px dashed ${borde}`,
           background: fondo,
@@ -192,36 +251,60 @@ function PhotoDropzone({ value, onChange, onUploadedPath }) {
       >
         {tieneFoto ? (
           <React.Fragment>
+            {/* El marco tiene la misma proporción que la tarjeta del catálogo,
+                así que lo que se ve aquí es exactamente lo que se verá ahí. */}
             <img
               src={fotoActual}
               alt="Vista previa de la foto"
+              draggable={false}
               style={{
                 position: 'absolute',
                 inset: 0,
                 width: '100%',
                 height: '100%',
                 objectFit: 'cover',
+                objectPosition: `${px}% ${py}%`,
                 opacity: uploading ? 0.45 : 1,
-                transition: 'var(--transition-hover)',
+                cursor: 'crosshair',
+                transition: arrastrando ? 'none' : 'var(--transition-hover)',
               }}
             />
             {!uploading ? (
-              <div style={{ position: 'relative', display: 'flex', gap: 8 }}>
-                <button
-                  type="button"
-                  onClick={(e) => { e.stopPropagation(); abrirSelector(); }}
-                  style={estiloBotonSobreFoto}
-                >
-                  Reemplazar
-                </button>
-                <button
-                  type="button"
-                  onClick={quitar}
-                  style={{ ...estiloBotonSobreFoto, color: 'var(--terracotta-600)' }}
-                >
-                  Quitar
-                </button>
-              </div>
+              <React.Fragment>
+                <div style={{ position: 'relative', display: 'flex', gap: 8 }}>
+                  <button
+                    type="button"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={(e) => { e.stopPropagation(); abrirSelector(); }}
+                    style={estiloBotonSobreFoto}
+                  >
+                    Reemplazar
+                  </button>
+                  <button
+                    type="button"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={centrar}
+                    style={estiloBotonSobreFoto}
+                  >
+                    Centrar
+                  </button>
+                  <button
+                    type="button"
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onClick={quitar}
+                    style={{ ...estiloBotonSobreFoto, color: 'var(--terracotta-600)' }}
+                  >
+                    Quitar
+                  </button>
+                </div>
+                <span style={{
+                  position: 'absolute', left: 0, right: 0, bottom: 0,
+                  padding: '6px 10px', background: 'rgba(0,0,0,0.55)', color: '#fff', textAlign: 'center',
+                  fontSize: 'var(--text-2xs)', pointerEvents: 'none',
+                }}>
+                  Toca la parte que quieres mostrar · {px}% {py}%
+                </span>
+              </React.Fragment>
             ) : null}
           </React.Fragment>
         ) : (
