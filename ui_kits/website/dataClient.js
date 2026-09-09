@@ -23,6 +23,7 @@
     window.db = {
       MAX_BYTES: 5 * 1024 * 1024,
       listAnimals: falla, saveAnimal: falla, deleteAnimal: falla,
+      cambiarEstadoAnimal: falla,
       uploadPhoto: falla, deletePhoto: falla,
       signIn: falla, signUp: falla, signOut: falla, getSession: falla,
       miAcceso: falla, listPanelUsers: falla, decidirAcceso: falla,
@@ -125,6 +126,24 @@
         ? sb.from(TABLA).update(fila).eq('id', form.id).select().single()
         : sb.from(TABLA).insert(fila).select().single();
       return q.then(desempacar);
+    },
+
+    // Cambia solo el estado. Existe aparte de saveAnimal porque marcar un
+    // perro como adoptado es la operación más frecuente del panel, y obligar a
+    // abrir la ficha completa para eso hace que se deje de hacer.
+    cambiarEstadoAnimal: function (id, status) {
+      return sb
+        .from(TABLA)
+        .update({ status: status })
+        .eq('id', id)
+        .select()
+        .then(desempacar)
+        .then(function (filas) {
+          if (!filas || filas.length === 0) {
+            throw new Error('No se pudo cambiar el estado. Vuelve a iniciar sesión.');
+          }
+          return filas[0];
+        });
     },
 
     // Borra la fila y después su foto. En ese orden a propósito: si el borrado

@@ -282,6 +282,7 @@ function AdminPanel({ acceso }) {
 
   const [deleteTarget, setDeleteTarget] = React.useState(null);
   const [borrando, setBorrando] = React.useState(false);
+  const [cambiandoEstado, setCambiandoEstado] = React.useState('');
   const [cuentaAbierta, setCuentaAbierta] = React.useState(false);
 
   // Contabilidad de fotos huérfanas. Cada foto se sube al soltarla, antes de
@@ -369,6 +370,21 @@ function AdminPanel({ acceso }) {
       setErrorForm(e.message);
     } finally {
       setGuardando(false);
+    }
+  }
+
+  // Cambio de estado desde la propia lista, sin abrir la ficha. Es lo que más
+  // se hace y antes costaba cinco clics.
+  async function cambiarEstado(a, status) {
+    setCambiandoEstado(a.id);
+    setErrorCarga('');
+    try {
+      await window.db.cambiarEstadoAnimal(a.id, status);
+      setAnimals((prev) => prev.map((x) => (x.id === a.id ? { ...x, status: status } : x)));
+    } catch (e) {
+      setErrorCarga(e.message);
+    } finally {
+      setCambiandoEstado('');
     }
   }
 
@@ -482,7 +498,24 @@ function AdminPanel({ acceso }) {
               <span style={{ color: 'var(--text-secondary)', font: 'var(--font-body-sm)' }}>{a.age}</span>
               <span style={{ color: 'var(--text-secondary)', font: 'var(--font-body-sm)' }}>{a.size}</span>
               <span style={{ color: 'var(--text-secondary)', font: 'var(--font-body-sm)' }}>{a.energy}</span>
-              <span><Badge tone={statusTone(a.status)}>{a.status}</Badge></span>
+              <span>
+                <select
+                  value={a.status}
+                  disabled={cambiandoEstado === a.id}
+                  onChange={(e) => cambiarEstado(a, e.target.value)}
+                  aria-label={`Estado de ${a.name}`}
+                  style={{
+                    font: 'var(--font-body-sm)', fontWeight: 600, fontFamily: 'var(--font-body)',
+                    padding: '5px 8px', borderRadius: 'var(--radius-pill)', cursor: 'pointer',
+                    border: '1.5px solid var(--border-default)',
+                    background: a.status === 'Adoptado' ? 'var(--status-success-bg)' : '#fff',
+                    color: a.status === 'Adoptado' ? 'var(--sage-600)' : 'var(--text-primary)',
+                    opacity: cambiandoEstado === a.id ? 0.5 : 1,
+                  }}
+                >
+                  {STATUS_OPTS.map((o) => <option key={o} value={o}>{o}</option>)}
+                </select>
+              </span>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button onClick={() => openEdit(a)} aria-label={`Editar a ${a.name}`} style={{ border: 'none', background: 'var(--surface-sunken)', width: 32, height: 32, borderRadius: 'var(--radius-pill)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--action-primary)' }}>
                   <i data-lucide="pencil" style={{ width: 15, height: 15 }} />
