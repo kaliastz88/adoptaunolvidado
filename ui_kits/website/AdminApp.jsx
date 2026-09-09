@@ -274,6 +274,7 @@ function AdminPanel({ acceso }) {
 
   const [query, setQuery] = React.useState('');
   const [speciesFilter, setSpeciesFilter] = React.useState('Todas');
+  const [statusFilter, setStatusFilter] = React.useState('Todos');
 
   const [modalOpen, setModalOpen] = React.useState(false);
   const [form, setForm] = React.useState(emptyForm());
@@ -407,8 +408,16 @@ function AdminPanel({ acceso }) {
   const filtered = animals.filter((a) => {
     const matchesQuery = a.name.toLowerCase().includes(query.toLowerCase());
     const matchesSpecies = speciesFilter === 'Todas' || a.species === speciesFilter;
-    return matchesQuery && matchesSpecies;
+    const matchesStatus = statusFilter === 'Todos' || a.status === statusFilter;
+    return matchesQuery && matchesSpecies && matchesStatus;
   });
+
+  // El conteo por estado se saca de la lista completa, no de la filtrada: sirve
+  // para saber cómo está el refugio, y cambiaría de sentido si dependiera del
+  // filtro que se tenga puesto en ese momento.
+  const conteo = { Disponible: 0, 'En proceso': 0, Adoptado: 0 };
+  animals.forEach((a) => { if (conteo[a.status] !== undefined) conteo[a.status] += 1; });
+  const hayFiltro = query || speciesFilter !== 'Todas' || statusFilter !== 'Todos';
 
   const statusTone = (s) => (s === 'Disponible' ? 'success' : s === 'En proceso' ? 'warning' : 'neutral');
   const COLUMNAS = '1.4fr 0.8fr 0.8fr 0.8fr 0.9fr 1fr 0.8fr';
@@ -471,9 +480,26 @@ function AdminPanel({ acceso }) {
         ) : null}
 
         <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', marginBottom: 24 }}>
-          <Input placeholder="Buscar por nombre..." value={query} onChange={(e) => setQuery(e.target.value)} />
-          <Select value={speciesFilter} onChange={(e) => setSpeciesFilter(e.target.value)} options={['Todas', ...SPECIES_OPTS]} />
+          <Input label="Buscar" placeholder="Nombre del perrito..." value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Select label="Especie" value={speciesFilter} onChange={(e) => setSpeciesFilter(e.target.value)} options={['Todas', ...SPECIES_OPTS]} />
+          <Select label="Estado" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} options={['Todos', ...STATUS_OPTS]} />
+          {hayFiltro ? (
+            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+              <Button variant="ghost" icon="rotate-ccw"
+                      onClick={() => { setQuery(''); setSpeciesFilter('Todas'); setStatusFilter('Todos'); }}>
+                Limpiar
+              </Button>
+            </div>
+          ) : null}
         </div>
+
+        {!cargando ? (
+          <p style={{ font: 'var(--font-body-sm)', color: 'var(--text-secondary)', margin: '0 0 14px' }}>
+            {animals.length} en total · <b>{conteo.Disponible}</b> disponibles ·{' '}
+            <b>{conteo['En proceso']}</b> en proceso · <b>{conteo.Adoptado}</b> adoptados
+            {hayFiltro ? <span style={{ color: 'var(--text-muted)' }}> · viendo {filtered.length}</span> : null}
+          </p>
+        ) : null}
 
         <div style={{ background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', overflow: 'hidden' }}>
           <div style={{ display: 'grid', gridTemplateColumns: COLUMNAS, gap: 12, padding: '14px 24px', background: 'var(--surface-alt)', font: 'var(--font-caption)', fontWeight: 700, color: 'var(--text-muted)', textTransform: 'uppercase' }}>
@@ -484,7 +510,7 @@ function AdminPanel({ acceso }) {
             <div style={{ padding: '40px 24px', textAlign: 'center', color: 'var(--text-muted)' }}>Cargando animales...</div>
           ) : filtered.length === 0 ? (
             <div style={{ padding: '40px 24px', textAlign: 'center', color: 'var(--text-muted)' }}>
-              {animals.length === 0 ? 'Todavía no hay animales registrados. Empieza con «Agregar animal».' : 'No hay resultados para esa búsqueda.'}
+              {animals.length === 0 ? 'Todavía no hay animales registrados. Empieza con «Agregar animal».' : 'Ningún perrito coincide con esos filtros.'}
             </div>
           ) : filtered.map((a) => (
             <div key={a.id} style={{ display: 'grid', gridTemplateColumns: COLUMNAS, gap: 12, padding: '16px 24px', borderTop: '1px solid var(--border-subtle)', alignItems: 'center' }}>
