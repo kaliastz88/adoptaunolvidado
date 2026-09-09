@@ -16,6 +16,18 @@ function App() {
   const [route, setRoute] = React.useState('home');
   const [profileDog, setProfileDog] = React.useState(null);
 
+  // Los textos se cargan una sola vez y se guardan en un global que cualquier
+  // pantalla puede leer con T(). El contador solo sirve para volver a pintar
+  // cuando llegan; hasta entonces se ven los valores por defecto del código.
+  const [, setTextosListos] = React.useState(0);
+  React.useEffect(() => {
+    let vivo = true;
+    window.db.cargarTextos()
+      .then((mapa) => { if (vivo) { window.TEXTOS = mapa; setTextosListos((n) => n + 1); } })
+      .catch(() => {});
+    return () => { vivo = false; };
+  }, []);
+
   React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
 
   const { Home } = window.WebsiteScreens;
@@ -55,7 +67,8 @@ function App() {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--surface-page)', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', background: 'var(--surface-page)', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <window.Huellas />
       <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 48px', position: 'sticky', top: 0, background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(8px)', zIndex: 20, borderBottom: '1px solid var(--border-subtle)' }}>
         <span style={{ cursor: 'pointer' }} onClick={() => setRoute('home')}><Logo /></span>
         <nav style={{ display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
@@ -69,7 +82,7 @@ function App() {
         </nav>
       </header>
 
-      <main style={{ flex: 1 }}>
+      <main style={{ flex: 1, position: 'relative', zIndex: 1 }}>
         {route === 'home' && <Home onSeeDog={goProfile} onNavigate={irA} />}
         {route === 'catalogo' && <Catalogo onSeeDog={goProfile} />}
         {route === 'perfil' && <DogProfile dog={profileDog} onBack={() => setRoute('catalogo')} onAdoptar={goSolicitud} onApadrinar={goApadrinar} />}
@@ -86,7 +99,7 @@ function App() {
         {route === 'contacto' && <Contacto />}
       </main>
 
-      <footer style={{ background: 'var(--blue-900)', color: 'var(--text-on-dark)', padding: '48px', marginTop: 40 }}>
+      <footer style={{ background: 'var(--blue-900)', color: 'var(--text-on-dark)', padding: '48px', marginTop: 40, position: 'relative', zIndex: 1 }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 }}>
           <Logo inverse />
           <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>

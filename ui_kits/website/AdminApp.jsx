@@ -265,8 +265,8 @@ function AdminPanel({ acceso }) {
   const [nuevasSolicitudes, setNuevasSolicitudes] = React.useState(0);
 
   const PESTANAS = esOwner
-    ? ['Animales', 'Solicitudes', 'Padrinos', 'Alianzas', 'Usuarios']
-    : ['Animales', 'Solicitudes', 'Padrinos', 'Alianzas'];
+    ? ['Animales', 'Solicitudes', 'Padrinos', 'Alianzas', 'Textos', 'Usuarios']
+    : ['Animales', 'Solicitudes', 'Padrinos', 'Alianzas', 'Textos'];
 
   const [animals, setAnimals] = React.useState([]);
   const [cargando, setCargando] = React.useState(true);
@@ -435,6 +435,7 @@ function AdminPanel({ acceso }) {
         </div>
 
         {seccion === 'Usuarios' && esOwner ? <SeccionUsuarios yo={acceso} />
+        : seccion === 'Textos' ? <SeccionTextos />
         : seccion === 'Padrinos' ? <SeccionPadrinos />
         : seccion === 'Alianzas' ? <SeccionAlianzas />
         : seccion === 'Solicitudes' ? <SeccionSolicitudes onContarNuevas={setNuevasSolicitudes} /> : (
@@ -696,6 +697,125 @@ function SeccionSolicitudes({ onContarNuevas }) {
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+// =============================================================================
+// Textos del sitio
+//
+// Solo se editan valores; la lista de textos editables la define el código, no
+// esta pantalla. Por eso las políticas de la base permiten actualizar pero no
+// insertar ni borrar: nadie puede inventar una clave desde aquí y esperar que
+// el sitio la use.
+// =============================================================================
+
+function SeccionTextos() {
+  const { Button, Input } = window.AdoptaUnOlvidadoDesignSystem_167478;
+  const [textos, setTextos] = React.useState([]);
+  const [borrador, setBorrador] = React.useState({});
+  const [cargando, setCargando] = React.useState(true);
+  const [guardando, setGuardando] = React.useState(false);
+  const [error, setError] = React.useState('');
+  const [guardado, setGuardado] = React.useState(false);
+
+  React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
+
+  const recargar = React.useCallback(async () => {
+    setCargando(true); setError('');
+    try {
+      const filas = await window.db.listTextos();
+      setTextos(filas);
+      const b = {};
+      filas.forEach((f) => { b[f.clave] = f.valor; });
+      setBorrador(b);
+    } catch (e) { setError(e.message); }
+    finally { setCargando(false); }
+  }, []);
+
+  React.useEffect(() => { recargar(); }, [recargar]);
+
+  // Solo se mandan los que cambiaron. Guardar los veinticinco en cada clic
+  // sería lento y dejaría la fecha de modificación mintiendo sobre textos que
+  // nadie tocó.
+  const cambiados = textos.filter((t) => borrador[t.clave] !== t.valor);
+
+  async function guardar() {
+    setGuardando(true); setError(''); setGuardado(false);
+    try {
+      for (const t of cambiados) await window.db.guardarTexto(t.clave, borrador[t.clave]);
+      await recargar();
+      setGuardado(true);
+    } catch (e) { setError(e.message); }
+    finally { setGuardando(false); }
+  }
+
+  if (cargando) return <p style={{ font: 'var(--font-body-base)', color: 'var(--text-muted)' }}>Cargando textos...</p>;
+
+  const secciones = [];
+  textos.forEach((t) => { if (!secciones.includes(t.seccion)) secciones.push(t.seccion); });
+
+  return (
+    <div>
+      <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-primary)', textTransform: 'uppercase' }}>Adopta un Olvidado · Admin</span>
+      <h1 style={{ font: 'var(--font-h2)', color: 'var(--text-primary)', margin: '8px 0 6px' }}>Textos del sitio</h1>
+      <p style={{ font: 'var(--font-body-base)', color: 'var(--text-secondary)', marginBottom: 24, maxWidth: 640 }}>
+        Cambia lo que dice el sitio sin tocar el código. Los cambios se ven en cuanto guardas.
+        Si dejas un campo vacío, ese dato deja de aparecer en la página.
+      </p>
+
+      {error ? (
+        <div style={{ background: 'var(--terracotta-50)', border: '1px solid var(--terracotta-500)', color: 'var(--terracotta-600)', borderRadius: 'var(--radius-sm)', padding: '14px 18px', marginBottom: 20, font: 'var(--font-body-sm)' }}>{error}</div>
+      ) : null}
+      {guardado && cambiados.length === 0 ? (
+        <div style={{ background: 'var(--status-success-bg)', color: 'var(--sage-600)', borderRadius: 'var(--radius-sm)', padding: '14px 18px', marginBottom: 20, font: 'var(--font-body-sm)', fontWeight: 600 }}>
+          Guardado. Recarga el sitio para verlo.
+        </div>
+      ) : null}
+
+      {secciones.map((sec) => (
+        <section key={sec} style={{ background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', padding: 28, marginBottom: 20 }}>
+          <h2 style={{ font: 'var(--font-h4)', color: 'var(--text-primary)', margin: '0 0 20px' }}>{sec}</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+            {textos.filter((t) => t.seccion === sec).map((t) => {
+              const cambio = borrador[t.clave] !== t.valor;
+              const poner = (v) => setBorrador((b) => ({ ...b, [t.clave]: v }));
+              return (
+                <div key={t.clave}>
+                  {t.multilinea ? (
+                    <label style={{ display: 'flex', flexDirection: 'column', gap: 6, fontFamily: 'var(--font-body)' }}>
+                      <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--text-primary)' }}>
+                        {t.etiqueta}{cambio ? ' ·' : ''}
+                      </span>
+                      <textarea value={borrador[t.clave]} onChange={(e) => poner(e.target.value)} rows={3}
+                        style={{ font: 'var(--font-body-base)', padding: '12px 16px', borderRadius: 'var(--radius-input)',
+                                 border: `1.5px solid ${cambio ? 'var(--action-primary)' : 'var(--border-default)'}`,
+                                 resize: 'vertical', fontFamily: 'var(--font-body)' }} />
+                    </label>
+                  ) : (
+                    <Input label={t.etiqueta + (cambio ? ' ·' : '')} value={borrador[t.clave]}
+                           onChange={(e) => poner(e.target.value)} />
+                  )}
+                  {t.ayuda ? (
+                    <span style={{ display: 'block', marginTop: 4, fontSize: 'var(--text-2xs)', color: 'var(--text-muted)' }}>{t.ayuda}</span>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      ))}
+
+      {/* La barra se queda pegada abajo: la lista es larga y tener que subir
+          hasta arriba para guardar es la forma más fácil de perder cambios. */}
+      <div style={{ position: 'sticky', bottom: 0, background: 'var(--surface-page)', padding: '16px 0', display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap', borderTop: '1px solid var(--border-subtle)' }}>
+        <Button variant="primary" icon="check" onClick={guardar} disabled={guardando || cambiados.length === 0}>
+          {guardando ? 'Guardando...' : cambiados.length === 0 ? 'Sin cambios' : `Guardar ${cambiados.length} cambio${cambiados.length === 1 ? '' : 's'}`}
+        </Button>
+        {cambiados.length > 0 ? (
+          <Button variant="ghost" onClick={recargar} disabled={guardando}>Descartar</Button>
+        ) : null}
+      </div>
     </div>
   );
 }

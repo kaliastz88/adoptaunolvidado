@@ -19,9 +19,9 @@ function Historias({ onSeeDog, onNavigate }) {
   return (
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: '56px 48px' }}>
       <span style={{ font: 'var(--font-eyebrow)', color: 'var(--status-success)', textTransform: 'uppercase' }}>Historias de éxito</span>
-      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '12px 0 16px' }}>Cada adopción cambia dos vidas.</h1>
+      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '12px 0 16px' }}>{T('historias.titulo', 'Cada adopción cambia dos vidas.')}</h1>
       <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', marginBottom: 40, maxWidth: 660 }}>
-        Estas son algunas de las transformaciones que hemos acompañado. Rescatar es solo el comienzo.
+        {T('historias.intro', 'Estas son algunas de las transformaciones que hemos acompañado. Rescatar es solo el comienzo.')}
       </p>
 
       {historias === null ? (

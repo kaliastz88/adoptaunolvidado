@@ -29,6 +29,7 @@
       cambiarMiContrasena: falla,
       crearSolicitudAdopcion: falla, listSolicitudes: falla,
       cambiarEstadoSolicitud: falla, borrarSolicitud: falla,
+      cargarTextos: falla, listTextos: falla, guardarTexto: falla,
       crearSolicitudApadrinar: falla, listApadrinamientos: falla,
       cambiarEstadoApadrinamiento: falla, borrarApadrinamiento: falla,
       crearSolicitudAlianza: falla, listAlianzas: falla,
@@ -266,6 +267,47 @@
           if (!filas || filas.length === 0) {
             throw new Error('No se pudo eliminar la solicitud. Vuelve a iniciar sesión.');
           }
+        });
+    },
+
+    // --- Textos editables del sitio ----------------------------------------
+
+    // Devuelve un objeto { clave: valor }. Lectura pública: el sitio los
+    // necesita sin que nadie inicie sesión.
+    cargarTextos: function () {
+      return sb
+        .from('site_texts')
+        .select('clave, valor')
+        .then(desempacar)
+        .then(function (filas) {
+          var mapa = {};
+          (filas || []).forEach(function (f) { mapa[f.clave] = f.valor; });
+          return mapa;
+        });
+    },
+
+    // Con etiquetas y ayudas, para pintar el formulario del panel.
+    listTextos: function () {
+      return sb
+        .from('site_texts')
+        .select('*')
+        .order('seccion', { ascending: true })
+        .order('orden', { ascending: true })
+        .then(desempacar);
+    },
+
+    guardarTexto: function (clave, valor) {
+      return sb
+        .from('site_texts')
+        .update({ valor: valor, updated_at: new Date().toISOString() })
+        .eq('clave', clave)
+        .select()
+        .then(desempacar)
+        .then(function (filas) {
+          if (!filas || filas.length === 0) {
+            throw new Error('No se pudo guardar el texto. Vuelve a iniciar sesión.');
+          }
+          return filas[0];
         });
     },
 

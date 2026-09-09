@@ -30,10 +30,9 @@ function Apadrina({ onSeeDog, onNavigate }) {
   return (
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: '56px 48px' }}>
       <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-sponsor)', textTransform: 'uppercase' }}>Apadrina</span>
-      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '12px 0 20px' }}>Acompaña una historia hasta su final feliz.</h1>
+      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '12px 0 20px' }}>{T('apadrina.titulo', 'Acompaña una historia hasta su final feliz.')}</h1>
       <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', marginBottom: 16, maxWidth: 680 }}>
-        Cuando apadrinas a uno de nuestros rescatados, te conviertes en parte de su camino: desde su
-        recuperación hasta el momento en que encuentra una familia que lo ame para siempre.
+        {T('apadrina.intro', 'Cuando apadrinas a uno de nuestros rescatados, te conviertes en parte de su camino: desde su recuperación hasta el momento en que encuentra una familia que lo ame para siempre.')}
       </p>
 
       {/* La diferencia con donar se explica de frente. Es la primera duda de

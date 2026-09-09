@@ -23,9 +23,9 @@ function Home({ onSeeDog, onNavigate }) {
       {/* Hero */}
       <section style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 40, padding: '64px 48px', background: 'linear-gradient(180deg, var(--blue-50), var(--surface-page))' }}>
         <div style={{ flex: '1 1 460px', minWidth: 320 }}>
-          <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-primary)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-wider)' }}>Rescate · rehabilitación · adopción responsable</span>
-          <h1 style={{ font: 'var(--font-hero)', color: 'var(--text-primary)', margin: '14px 0 20px' }}>Un gesto tuyo puede ser el comienzo de su historia feliz.</h1>
-          <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', marginBottom: 28 }}>Rescatamos, rehabilitamos y encontramos el hogar correcto para cada perrito olvidado.</p>
+          <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-primary)', textTransform: 'uppercase', letterSpacing: 'var(--tracking-wider)' }}>{T('home.eyebrow', 'Rescate · rehabilitación · adopción responsable')}</span>
+          <h1 style={{ font: 'var(--font-hero)', color: 'var(--text-primary)', margin: '14px 0 20px' }}>{T('home.titulo', 'Un gesto tuyo puede ser el comienzo de su historia feliz.')}</h1>
+          <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', marginBottom: 28 }}>{T('home.subtitulo', 'Rescatamos, rehabilitamos y encontramos el hogar correcto para cada perrito olvidado.')}</p>
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
             <Button variant="cta" icon="heart" wag onClick={() => setOpen(true)}>Dona hoy</Button>
             <Button variant="secondary" icon="paw-print" onClick={() => onNavigate('catalogo')}>Conoce a nuestros perritos</Button>
@@ -36,9 +36,9 @@ function Home({ onSeeDog, onNavigate }) {
 
       {/* Stats */}
       <section style={{ padding: '0 48px 64px', display: 'flex', gap: 20, justifyContent: 'center', flexWrap: 'wrap' }}>
-        <StatCounter value="+60" label="perritos con hogar" />
-        <StatCounter value="4" label="fundadoras" tone="neutral" />
-        <StatCounter value="100%" label="adopción responsable" tone="neutral" />
+        <StatCounter value={T('home.stat1.valor', '+60')} label={T('home.stat1.etiqueta', 'perritos con hogar')} />
+        <StatCounter value={T('home.stat2.valor', '4')} label={T('home.stat2.etiqueta', 'fundadoras')} tone="neutral" />
+        <StatCounter value={T('home.stat3.valor', '100%')} label={T('home.stat3.etiqueta', 'adopción responsable')} tone="neutral" />
       </section>
 
       {/* Stories — solo aparece si hay perros adoptados que contar. Una sección
@@ -84,9 +84,9 @@ function Home({ onSeeDog, onNavigate }) {
       {/* Aliados */}
       <section style={{ padding: '72px 48px', maxWidth: 1000, margin: '0 auto' }}>
         <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-sponsor)', textTransform: 'uppercase' }}>Aliados</span>
-        <h2 style={{ font: 'var(--font-h2)', color: 'var(--text-primary)', margin: '10px 0 18px' }}>Las grandes historias comienzan con una alianza.</h2>
+        <h2 style={{ font: 'var(--font-h2)', color: 'var(--text-primary)', margin: '10px 0 18px' }}>{T('home.aliados.titulo', 'Las grandes historias comienzan con una alianza.')}</h2>
         <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', maxWidth: 720 }}>
-          En Adopta un Olvidado creemos que cambiar la vida de un perrito no es una tarea que podamos hacer solos. Hoy reconocemos a <b>Hotel PupuClub</b>, que abrió sus puertas como hogar temporal y espacio de rehabilitación para nuestros rescatados.
+          {T('home.aliados.texto', 'En Adopta un Olvidado creemos que cambiar la vida de un perrito no es una tarea que podamos hacer solos. Hoy reconocemos a Hotel PupuClub, que abrió sus puertas como hogar temporal y espacio de rehabilitación para nuestros rescatados.')}
         </p>
         <div style={{ display: 'flex', gap: 14, marginTop: 22 }}>
           <Button variant="secondary" icon="play">Conoce la historia de Snow</Button>

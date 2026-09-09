@@ -7,9 +7,9 @@ function Donar() {
   return (
     <div style={{ maxWidth: 1000, margin: '0 auto', padding: '56px 48px' }}>
       <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-cta)', textTransform: 'uppercase' }}>Donar</span>
-      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '12px 0 16px' }}>Tu donación es el primer paso de su nueva vida.</h1>
+      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '12px 0 16px' }}>{T('donar.titulo', 'Tu donación es el primer paso de su nueva vida.')}</h1>
       <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', marginBottom: 40, maxWidth: 660 }}>
-        Cada aporte se convierte en atención médica, alimento y un lugar seguro donde sanar. Así es como tu ayuda se transforma en una historia feliz.
+        {T('donar.intro', 'Cada aporte se convierte en atención médica, alimento y un lugar seguro donde sanar. Así es como tu ayuda se transforma en una historia feliz.')}
       </p>
       <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap', alignItems: 'flex-start' }}>
         <div style={{ flex: '1 1 340px', minWidth: 300, background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', padding: 28 }}>

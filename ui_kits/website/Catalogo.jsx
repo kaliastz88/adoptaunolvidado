@@ -39,8 +39,8 @@ function Catalogo({ onSeeDog }) {
   return (
     <div style={{ padding: '48px', maxWidth: 1100, margin: '0 auto' }}>
       <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-primary)', textTransform: 'uppercase' }}>Adopta</span>
-      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '10px 0 8px' }}>Cada uno espera su segunda oportunidad</h1>
-      <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', marginBottom: 32, maxWidth: 640 }}>Filtra por especie y tamaño para encontrar a tu nuevo compañero de vida.</p>
+      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '10px 0 8px' }}>{T('catalogo.titulo', 'Cada uno espera su segunda oportunidad')}</h1>
+      <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', marginBottom: 32, maxWidth: 640 }}>{T('catalogo.subtitulo', 'Filtra por especie y tamaño para encontrar a tu nuevo compañero de vida.')}</p>
 
       <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end', flexWrap: 'wrap', background: '#fff', padding: 20, borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', marginBottom: 36 }}>
         <Select label="Especie" value={especie} onChange={(e) => setEspecie(e.target.value)} options={[TODAS_ESPECIES, 'Perro', 'Gato']} />
