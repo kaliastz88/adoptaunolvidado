@@ -280,6 +280,7 @@ function AdminPanel({ acceso }) {
 
   const [deleteTarget, setDeleteTarget] = React.useState(null);
   const [borrando, setBorrando] = React.useState(false);
+  const [cuentaAbierta, setCuentaAbierta] = React.useState(false);
 
   // Contabilidad de fotos huérfanas. Cada foto se sube al soltarla, antes de
   // saber si vas a guardar o cancelar, así que hay que recordar cuáles quedaron
@@ -405,6 +406,12 @@ function AdminPanel({ acceso }) {
           <span style={{ font: 'var(--font-body-sm)', color: 'var(--text-muted)' }}>
             {acceso.email}{esOwner ? ' · dueña' : ''}
           </span>
+          <button
+            onClick={() => setCuentaAbierta(true)}
+            style={{ border: 'none', background: 'none', cursor: 'pointer', font: 'var(--font-body-sm)', fontWeight: 600, color: 'var(--action-primary)', fontFamily: 'var(--font-body)' }}
+          >
+            Mi cuenta
+          </button>
           <a href="index.html" style={{ font: 'var(--font-body-sm)', fontWeight: 600, color: 'var(--text-secondary)' }}>← Volver al sitio</a>
           <button
             onClick={() => window.db.signOut()}
@@ -495,6 +502,11 @@ function AdminPanel({ acceso }) {
         guardando={guardando}
         error={errorForm}
         onUploadedPath={(p) => { subidas.current.push(p); }}
+      />
+      <MiCuentaModal
+        open={cuentaAbierta}
+        correo={acceso.email}
+        onClose={() => setCuentaAbierta(false)}
       />
       <ConfirmDeleteModal
         target={deleteTarget}
@@ -884,6 +896,80 @@ function AnimalFormModal({ open, form, setForm, onClose, onSave, guardando, erro
         </Button>
         <Button variant="ghost" onClick={onClose} disabled={guardando}>Cancelar</Button>
       </div>
+    </Modal>
+  );
+}
+
+// Cambiar la propia contraseña, sin pasar por Supabase.
+//
+// Existe porque el resto del equipo nunca va a tener acceso al panel de
+// Supabase, así que sin esto nadie más que la dueña podría cambiar la suya.
+// Supabase toma la cuenta del token de sesión, no de un parámetro, así que
+// desde aquí solo se puede cambiar la contraseña propia.
+function MiCuentaModal({ open, correo, onClose }) {
+  const { Modal, Input, Button } = window.AdoptaUnOlvidadoDesignSystem_167478;
+  const [nueva, setNueva] = React.useState('');
+  const [repetir, setRepetir] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [listo, setListo] = React.useState(false);
+  const [guardando, setGuardando] = React.useState(false);
+
+  function cerrar() {
+    setNueva(''); setRepetir(''); setError(''); setListo(false);
+    onClose();
+  }
+
+  async function guardar() {
+    if (nueva.length < 8) { setError('La contraseña necesita al menos 8 caracteres.'); return; }
+    if (nueva !== repetir) { setError('Las dos contraseñas no coinciden.'); return; }
+    setGuardando(true);
+    setError('');
+    try {
+      await window.db.cambiarMiContrasena(nueva);
+      setListo(true);
+      setNueva(''); setRepetir('');
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setGuardando(false);
+    }
+  }
+
+  return (
+    <Modal open={open} onClose={cerrar} title="Mi cuenta">
+      <p style={{ font: 'var(--font-body-sm)', color: 'var(--text-secondary)', margin: '0 0 18px' }}>
+        Sesión iniciada como <b>{correo}</b>
+      </p>
+
+      {listo ? (
+        <React.Fragment>
+          <p style={{ font: 'var(--font-body-base)', color: 'var(--text-primary)', margin: '0 0 20px' }}>
+            Tu contraseña quedó cambiada. Úsala la próxima vez que entres.
+          </p>
+          <Button variant="primary" icon="check" onClick={cerrar} style={{ width: '100%' }}>Listo</Button>
+        </React.Fragment>
+      ) : (
+        <div
+          onKeyDown={(e) => { if (e.key === 'Enter') guardar(); }}
+          style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
+        >
+          <Input label="Nueva contraseña" type="password" placeholder="Al menos 8 caracteres"
+                 value={nueva} onChange={(e) => setNueva(e.target.value)} />
+          <Input label="Repite la nueva contraseña" type="password" placeholder="••••••••"
+                 value={repetir} onChange={(e) => setRepetir(e.target.value)} />
+
+          {error ? (
+            <span style={{ font: 'var(--font-body-sm)', color: 'var(--terracotta-600)' }}>{error}</span>
+          ) : null}
+
+          <div style={{ display: 'flex', gap: 10, marginTop: 6 }}>
+            <Button variant="primary" icon="key-round" onClick={guardar} disabled={guardando} style={{ flex: 1 }}>
+              {guardando ? 'Guardando...' : 'Cambiar contraseña'}
+            </Button>
+            <Button variant="ghost" onClick={cerrar} disabled={guardando}>Cancelar</Button>
+          </div>
+        </div>
+      )}
     </Modal>
   );
 }

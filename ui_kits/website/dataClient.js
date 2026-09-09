@@ -26,6 +26,7 @@
       uploadPhoto: falla, deletePhoto: falla,
       signIn: falla, signUp: falla, signOut: falla, getSession: falla,
       miAcceso: falla, listPanelUsers: falla, decidirAcceso: falla,
+      cambiarMiContrasena: falla,
       crearSolicitudAdopcion: falla, listSolicitudes: falla,
       cambiarEstadoSolicitud: falla, borrarSolicitud: falla,
       onAuthChange: function () { return function () {}; },
@@ -64,6 +65,13 @@
       return 'No se pudo guardar: el registro ya no existe o tu sesión dejó de ser válida. Vuelve a iniciar sesión.';
     }
     if (/JWT expired|token is expired/i.test(msg)) return 'Tu sesión expiró. Vuelve a iniciar sesión.';
+    if (/Auth session missing/i.test(msg)) return 'No hay ninguna sesión abierta. Vuelve a iniciar sesión.';
+    if (/Password should be at least (\d+)/i.test(msg)) {
+      return 'La contraseña es demasiado corta. Usa al menos 8 caracteres.';
+    }
+    if (/New password should be different/i.test(msg)) {
+      return 'Esa es la misma contraseña que ya tenías. Escribe una distinta.';
+    }
     if (/Failed to fetch|NetworkError/i.test(msg)) return 'No se pudo conectar con Supabase. Revisa tu conexión y la URL del proyecto.';
     if (/exceeded the maximum allowed size/i.test(msg)) return 'La imagen pesa más de lo que permite el almacenamiento.';
     return msg;
@@ -185,6 +193,13 @@
 
     signOut: function () {
       return sb.auth.signOut();
+    },
+
+    // Cambia la contraseña de quien tiene la sesión abierta, y solo la suya:
+    // Supabase la toma del token de sesión, no de un parámetro, así que no hay
+    // forma de usar esto para cambiarle la contraseña a otra persona.
+    cambiarMiContrasena: function (nueva) {
+      return sb.auth.updateUser({ password: nueva }).then(desempacar);
     },
 
     getSession: function () {
