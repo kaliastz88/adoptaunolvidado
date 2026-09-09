@@ -30,9 +30,14 @@ function App() {
   const { Aliados } = window.WebsiteScreens;
   const { Contacto } = window.WebsiteScreens;
   const { SolicitudAdopcion } = window.WebsiteScreens;
+  const { SolicitudAlianza } = window.WebsiteScreens;
   const { Button } = window.AdoptaUnOlvidadoDesignSystem_167478;
 
   function goProfile(dog) { setProfileDog(dog); setRoute('perfil'); }
+
+  // Cambiar de pantalla siempre desde arriba: llegar a la mitad de un
+  // formulario porque la pantalla anterior venía con scroll desorienta.
+  function irA(r) { setRoute(r); window.scrollTo({ top: 0 }); }
 
   // La solicitud arranca arriba del todo: es una pantalla larga y llegar a la
   // mitad del formulario porque la anterior venía con scroll desorienta.
@@ -58,7 +63,7 @@ function App() {
       </header>
 
       <main style={{ flex: 1 }}>
-        {route === 'home' && <Home onSeeDog={goProfile} onNavigate={setRoute} />}
+        {route === 'home' && <Home onSeeDog={goProfile} onNavigate={irA} />}
         {route === 'catalogo' && <Catalogo onSeeDog={goProfile} />}
         {route === 'perfil' && <DogProfile dog={profileDog} onBack={() => setRoute('catalogo')} onAdoptar={goSolicitud} />}
         {route === 'solicitud' && <SolicitudAdopcion dog={profileDog} onBack={() => setRoute('perfil')} />}
@@ -68,7 +73,8 @@ function App() {
         {route === 'voluntario' && <Voluntario />}
         {route === 'donar' && <Donar />}
         {route === 'historias' && <Historias onSeeDog={goProfile} onNavigate={setRoute} />}
-        {route === 'aliados' && <Aliados />}
+        {route === 'aliados' && <Aliados onNavigate={irA} />}
+        {route === 'alianza' && <SolicitudAlianza onBack={() => setRoute('aliados')} />}
         {route === 'contacto' && <Contacto />}
       </main>
 
@@ -78,9 +84,16 @@ function App() {
           <div style={{ display: 'flex', gap: 32, flexWrap: 'wrap' }}>
             {NAV.map((n) => <span key={n} onClick={() => setRoute(ROUTES[n] || 'home')} style={{ font: 'var(--font-body-sm)', opacity: 0.85, cursor: 'pointer' }}>{n}</span>)}
           </div>
-          <div style={{ display: 'flex', gap: 14 }}>
-            <i data-lucide="camera" style={{ width: 20, height: 20 }} />
-          </div>
+          <a
+            href={window.REDES.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Instagram de Adopta un Olvidado, ${window.REDES.usuario}`}
+            style={{ display: 'flex', gap: 8, alignItems: 'center', color: 'var(--text-on-dark)', textDecoration: 'none' }}
+          >
+            <i data-lucide="instagram" style={{ width: 20, height: 20 }} />
+            <span style={{ font: 'var(--font-body-sm)', opacity: 0.85 }}>{window.REDES.usuario}</span>
+          </a>
         </div>
       </footer>
     </div>

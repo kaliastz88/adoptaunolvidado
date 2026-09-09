@@ -1,4 +1,4 @@
-function Aliados() {
+function Aliados({ onNavigate }) {
   const { Button } = window.AdoptaUnOlvidadoDesignSystem_167478;
   const WAYS = [
     { icon: 'home', title: 'Hogar temporal', body: 'Abre tus puertas como espacio de rehabilitación para nuestros rescatados.' },
@@ -40,7 +40,7 @@ function Aliados() {
       </div>
 
       <div style={{ textAlign: 'center' }}>
-        <Button variant="sponsor" icon="hand-heart">Quiero aliarme como marca</Button>
+        <Button variant="sponsor" icon="hand-heart" onClick={() => onNavigate('alianza')}>Quiero aliarme como marca</Button>
       </div>
     </div>
   );

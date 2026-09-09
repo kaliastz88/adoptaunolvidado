@@ -29,6 +29,8 @@
       cambiarMiContrasena: falla,
       crearSolicitudAdopcion: falla, listSolicitudes: falla,
       cambiarEstadoSolicitud: falla, borrarSolicitud: falla,
+      crearSolicitudAlianza: falla, listAlianzas: falla,
+      cambiarEstadoAlianza: falla, borrarAlianza: falla,
       onAuthChange: function () { return function () {}; },
     };
   }
@@ -261,6 +263,57 @@
         .then(function (filas) {
           if (!filas || filas.length === 0) {
             throw new Error('No se pudo eliminar la solicitud. Vuelve a iniciar sesión.');
+          }
+        });
+    },
+
+    // --- Solicitudes de alianza --------------------------------------------
+
+    // Sin .select(), por lo mismo que en las adopciones: el público escribe
+    // pero no lee, y pedir de vuelta la fila haría fallar un envío correcto.
+    crearSolicitudAlianza: function (datos) {
+      return sb
+        .from('ally_requests')
+        .insert(datos)
+        .then(function (res) {
+          if (res.error) throw new Error(traducirError(res.error));
+          return true;
+        });
+    },
+
+    listAlianzas: function () {
+      return sb
+        .from('ally_requests')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .then(desempacar);
+    },
+
+    cambiarEstadoAlianza: function (id, estado) {
+      return sb
+        .from('ally_requests')
+        .update({ estado: estado })
+        .eq('id', id)
+        .select()
+        .then(desempacar)
+        .then(function (filas) {
+          if (!filas || filas.length === 0) {
+            throw new Error('No se pudo actualizar. Vuelve a iniciar sesión.');
+          }
+          return filas[0];
+        });
+    },
+
+    borrarAlianza: function (id) {
+      return sb
+        .from('ally_requests')
+        .delete()
+        .eq('id', id)
+        .select()
+        .then(desempacar)
+        .then(function (filas) {
+          if (!filas || filas.length === 0) {
+            throw new Error('No se pudo eliminar. Vuelve a iniciar sesión.');
           }
         });
     },

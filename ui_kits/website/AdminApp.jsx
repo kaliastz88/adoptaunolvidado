@@ -264,7 +264,9 @@ function AdminPanel({ acceso }) {
   const [seccion, setSeccion] = React.useState('Animales');
   const [nuevasSolicitudes, setNuevasSolicitudes] = React.useState(0);
 
-  const PESTANAS = esOwner ? ['Animales', 'Solicitudes', 'Usuarios'] : ['Animales', 'Solicitudes'];
+  const PESTANAS = esOwner
+    ? ['Animales', 'Solicitudes', 'Alianzas', 'Usuarios']
+    : ['Animales', 'Solicitudes', 'Alianzas'];
 
   const [animals, setAnimals] = React.useState([]);
   const [cargando, setCargando] = React.useState(true);
@@ -433,6 +435,7 @@ function AdminPanel({ acceso }) {
         </div>
 
         {seccion === 'Usuarios' && esOwner ? <SeccionUsuarios yo={acceso} />
+        : seccion === 'Alianzas' ? <SeccionAlianzas />
         : seccion === 'Solicitudes' ? <SeccionSolicitudes onContarNuevas={setNuevasSolicitudes} /> : (
         <React.Fragment>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 20, flexWrap: 'wrap', marginBottom: 28 }}>
@@ -685,6 +688,132 @@ function SeccionSolicitudes({ onContarNuevas }) {
                         </dl>
                       </div>
                     ))}
+                  </div>
+                ) : null}
+              </article>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// =============================================================================
+// Alianzas con marcas
+// =============================================================================
+
+const ESTADOS_ALIANZA = ['nueva', 'en conversación', 'aliada', 'descartada'];
+
+function SeccionAlianzas() {
+  const { Button, Select, Badge } = window.AdoptaUnOlvidadoDesignSystem_167478;
+  const [filas, setFilas] = React.useState([]);
+  const [cargando, setCargando] = React.useState(true);
+  const [error, setError] = React.useState('');
+  const [abierta, setAbierta] = React.useState(null);
+  const [filtro, setFiltro] = React.useState('Todas');
+  const [ocupada, setOcupada] = React.useState('');
+
+  React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
+
+  const recargar = React.useCallback(async () => {
+    setCargando(true); setError('');
+    try { setFilas(await window.db.listAlianzas()); }
+    catch (e) { setError(e.message); }
+    finally { setCargando(false); }
+  }, []);
+
+  React.useEffect(() => { recargar(); }, [recargar]);
+
+  async function cambiar(a, estado) {
+    setOcupada(a.id); setError('');
+    try { await window.db.cambiarEstadoAlianza(a.id, estado); await recargar(); }
+    catch (e) { setError(e.message); }
+    finally { setOcupada(''); }
+  }
+
+  const tono = (e) => (e === 'aliada' ? 'success' : e === 'nueva' ? 'warning' : e === 'descartada' ? 'neutral' : 'info');
+  const visibles = filtro === 'Todas' ? filas : filas.filter((a) => a.estado === filtro);
+
+  if (cargando) return <p style={{ font: 'var(--font-body-base)', color: 'var(--text-muted)' }}>Cargando alianzas...</p>;
+
+  return (
+    <div>
+      <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-sponsor)', textTransform: 'uppercase' }}>Adopta un Olvidado · Admin</span>
+      <h1 style={{ font: 'var(--font-h2)', color: 'var(--text-primary)', margin: '8px 0 6px' }}>Marcas que quieren aliarse</h1>
+      <p style={{ font: 'var(--font-body-base)', color: 'var(--text-secondary)', marginBottom: 24 }}>
+        Cada propuesta llega desde el botón "Quiero aliarme como marca" del sitio.
+      </p>
+
+      {error ? (
+        <div style={{ background: 'var(--terracotta-50)', border: '1px solid var(--terracotta-500)', color: 'var(--terracotta-600)', borderRadius: 'var(--radius-sm)', padding: '14px 18px', marginBottom: 20, font: 'var(--font-body-sm)' }}>{error}</div>
+      ) : null}
+
+      <div style={{ marginBottom: 24, maxWidth: 260 }}>
+        <Select label="Filtrar por estado" value={filtro} onChange={(e) => setFiltro(e.target.value)} options={['Todas', ...ESTADOS_ALIANZA]} />
+      </div>
+
+      {visibles.length === 0 ? (
+        <div style={{ background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', padding: '48px 24px', textAlign: 'center', color: 'var(--text-muted)' }}>
+          {filas.length === 0
+            ? 'Todavía no hay propuestas de alianza. Aparecerán aquí en cuanto una marca llene el formulario.'
+            : 'Ninguna propuesta con ese estado.'}
+        </div>
+      ) : (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {visibles.map((a) => {
+            const abierto = abierta === a.id;
+            return (
+              <article key={a.id} style={{ background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', overflow: 'hidden' }}>
+                <div onClick={() => setAbierta(abierto ? null : a.id)}
+                     style={{ padding: '20px 24px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                      <span style={{ font: 'var(--font-h4)', color: 'var(--text-primary)' }}>{a.marca}</span>
+                      <Badge tone={tono(a.estado)}>{a.estado}</Badge>
+                    </div>
+                    <div style={{ font: 'var(--font-body-sm)', color: 'var(--text-secondary)', marginTop: 4 }}>
+                      {a.contacto}{a.puesto ? `, ${a.puesto}` : ''} · {new Date(a.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    </div>
+                    <div style={{ font: 'var(--font-body-sm)', color: 'var(--text-muted)', marginTop: 2 }}>
+                      {a.correo}{a.telefono ? ` · ${a.telefono}` : ''}
+                    </div>
+                  </div>
+                  <span style={{ font: 'var(--font-body-sm)', fontWeight: 600, color: 'var(--action-primary)' }}>
+                    {abierto ? 'Cerrar' : 'Ver propuesta'}
+                  </span>
+                </div>
+
+                {abierto ? (
+                  <div style={{ borderTop: '1px solid var(--border-subtle)', padding: 24, background: 'var(--surface-alt)' }}>
+                    <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 24 }}>
+                      <a href={`mailto:${a.correo}`} style={{ textDecoration: 'none' }}>
+                        <Button size="sm" variant="secondary" icon="mail">Escribirle</Button>
+                      </a>
+                      {a.sitio ? (
+                        <a href={/^https?:/.test(a.sitio) ? a.sitio : `https://${a.sitio.replace(/^@/, 'instagram.com/')}`}
+                           target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                          <Button size="sm" variant="secondary" icon="external-link">Ver su sitio</Button>
+                        </a>
+                      ) : null}
+                      {ESTADOS_ALIANZA.filter((e) => e !== a.estado && e !== 'nueva').map((e) => (
+                        <Button key={e} size="sm" variant={e === 'aliada' ? 'primary' : 'ghost'}
+                                disabled={ocupada === a.id} onClick={() => cambiar(a, e)}>
+                          Marcar como {e}
+                        </Button>
+                      ))}
+                    </div>
+                    <dl style={{ margin: 0, display: 'grid', gridTemplateColumns: 'minmax(160px, 220px) 1fr', gap: '8px 20px' }}>
+                      {[['Giro', a.giro], ['Sitio o redes', a.sitio], ['Ciudad', a.ciudad],
+                        ['Cómo quiere participar', a.formas], ['Su mensaje', a.mensaje]].map(([k, v]) => (
+                        <React.Fragment key={k}>
+                          <dt style={{ font: 'var(--font-body-sm)', color: 'var(--text-muted)' }}>{k}</dt>
+                          <dd style={{ margin: 0, font: 'var(--font-body-sm)', color: 'var(--text-primary)', whiteSpace: 'pre-wrap' }}>
+                            {v || <span style={{ color: 'var(--text-muted)' }}>sin contestar</span>}
+                          </dd>
+                        </React.Fragment>
+                      ))}
+                    </dl>
                   </div>
                 ) : null}
               </article>

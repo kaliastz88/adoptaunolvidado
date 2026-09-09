@@ -90,7 +90,7 @@ function Home({ onSeeDog, onNavigate }) {
         </p>
         <div style={{ display: 'flex', gap: 14, marginTop: 22 }}>
           <Button variant="secondary" icon="play">Conoce la historia de Snow</Button>
-          <Button variant="sponsor" icon="hand-heart">Quiero aliarme como marca</Button>
+          <Button variant="sponsor" icon="hand-heart" onClick={() => onNavigate('alianza')}>Quiero aliarme como marca</Button>
         </div>
       </section>
 
