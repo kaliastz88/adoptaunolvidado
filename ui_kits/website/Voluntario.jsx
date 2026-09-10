@@ -1,9 +1,10 @@
 function Voluntario() {
+  const { Seccion, Encabezado, Tarjeta } = window.UI;
   const { Input, Button } = window.AdoptaUnOlvidadoDesignSystem_167478;
   return (
-    <div style={{ maxWidth: 720, margin: '0 auto', padding: '56px 48px' }}>
+    <Seccion tono="arena" ancho={720}>
       <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-primary)', textTransform: 'uppercase' }}>Voluntario</span>
-      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '12px 0 16px' }}>¿Quieres ser voluntario?</h1>
+      <h1 style={{ font: 'var(--font-h1)', letterSpacing: '-0.02em', color: 'var(--text-primary)', margin: '12px 0 16px' }}>¿Quieres ser voluntario?</h1>
       <div style={{ background: 'var(--status-warning-bg)', border: '1px solid var(--amber-200)', borderRadius: 'var(--radius-md)', padding: '14px 18px', marginBottom: 28, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
         <i data-lucide="alert-triangle" style={{ width: 18, height: 18, color: 'var(--amber-600)', flexShrink: 0, marginTop: 2 }} />
         <p style={{ font: 'var(--font-body-sm)', color: 'var(--text-primary)', margin: 0 }}>
@@ -19,7 +20,7 @@ function Voluntario() {
         <Input label="¿Cómo te gustaría ayudar?" placeholder="Paseos, transporte, hogar temporal..." />
         <Button variant="primary" icon="hand-heart">Enviar</Button>
       </div>
-    </div>
+    </Seccion>
   );
 }
 

@@ -1,9 +1,10 @@
 function Contacto() {
+  const { Seccion, Encabezado, Tarjeta } = window.UI;
   const { Input, Button } = window.AdoptaUnOlvidadoDesignSystem_167478;
   return (
-    <div style={{ maxWidth: 940, margin: '0 auto', padding: '56px 48px' }}>
+    <Seccion tono="crema" ancho={940}>
       <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-primary)', textTransform: 'uppercase' }}>Contacto</span>
-      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '12px 0 16px' }}>Escríbenos, te respondemos.</h1>
+      <h1 style={{ font: 'var(--font-h1)', letterSpacing: '-0.02em', color: 'var(--text-primary)', margin: '12px 0 16px' }}>Escríbenos, te respondemos.</h1>
       <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', marginBottom: 32, maxWidth: 620 }}>
         {T('contacto.intro', 'La forma más rápida de encontrarnos es por Instagram, ahí contestamos todos los días.')}
       </p>
@@ -42,7 +43,7 @@ function Contacto() {
           })}
         </div>
       </div>
-    </div>
+    </Seccion>
   );
 }
 

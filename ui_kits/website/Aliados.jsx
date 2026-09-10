@@ -1,4 +1,5 @@
 function Aliados({ onNavigate }) {
+  const { Seccion, Encabezado, Tarjeta } = window.UI;
   const { Button } = window.AdoptaUnOlvidadoDesignSystem_167478;
   const WAYS = [
     { icon: 'home', title: 'Hogar temporal', body: 'Abre tus puertas como espacio de rehabilitación para nuestros rescatados.' },
@@ -7,9 +8,9 @@ function Aliados({ onNavigate }) {
     { icon: 'package', title: 'Donación en especie', body: 'Alimento, medicamentos, camas, transportadoras y material de cuidado.' },
   ];
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto', padding: '56px 48px' }}>
+    <Seccion tono="ambar" ancho={1000}>
       <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-sponsor)', textTransform: 'uppercase' }}>Aliados</span>
-      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '12px 0 16px' }}>Las grandes historias comienzan con una alianza.</h1>
+      <h1 style={{ font: 'var(--font-h1)', letterSpacing: '-0.02em', color: 'var(--text-primary)', margin: '12px 0 16px' }}>Las grandes historias comienzan con una alianza.</h1>
       <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', marginBottom: 40, maxWidth: 700 }}>
         En Adopta un Olvidado creemos que cambiar la vida de un perrito no es una tarea que podamos hacer solos. Cada rescate es posible gracias a personas y marcas que deciden sumarse.
       </p>
@@ -42,7 +43,7 @@ function Aliados({ onNavigate }) {
       <div style={{ textAlign: 'center' }}>
         <Button variant="sponsor" icon="hand-heart" onClick={() => onNavigate('alianza')}>Quiero aliarme como marca</Button>
       </div>
-    </div>
+    </Seccion>
   );
 }
 

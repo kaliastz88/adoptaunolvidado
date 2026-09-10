@@ -1,5 +1,6 @@
 function DogProfile({ dog, onBack, onAdoptar, onApadrinar }) {
   const { Button, Badge } = window.AdoptaUnOlvidadoDesignSystem_167478;
+  const { Seccion, FotoArco } = window.UI;
 
   React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
 
@@ -23,25 +24,29 @@ function DogProfile({ dog, onBack, onAdoptar, onApadrinar }) {
   ];
 
   return (
-    <div style={{ padding: '48px', maxWidth: 1000, margin: '0 auto' }}>
+    <Seccion tono="crema" ancho={1000}>
       <button onClick={onBack} style={{ border: 'none', background: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: 'var(--text-secondary)', font: 'var(--font-body-sm)', marginBottom: 24, fontFamily: 'var(--font-body)' }}>
         <i data-lucide="arrow-left" style={{ width: 16, height: 16 }} /> Volver al catálogo
       </button>
 
       <div style={{ display: 'flex', gap: 40, flexWrap: 'wrap' }}>
-        {/* La foto real cuando existe; el degradado de marca como respaldo. */}
-        <div style={{
-          width: 380, height: 420, borderRadius: 'var(--radius-card)', flexShrink: 0,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--blue-500)',
-          background: dog.photo
-            ? `${dog.photo_pos || 'center'}/cover no-repeat url(${dog.photo})`
-            : 'linear-gradient(150deg, var(--blue-100), var(--terracotta-50))',
-        }}>
+        {/* Foto en arco. El rectángulo hacía que cada ficha se viera como una
+            entrada de catálogo; el arco la vuelve un retrato. */}
+        <FotoArco src={dog.photo} pos={dog.photo_pos || 'center'} alto={440} ancho={360}
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--blue-500)' }}>
           {!dog.photo ? <i data-lucide={esGato ? 'cat' : 'dog'} style={{ width: 56, height: 56 }} /> : null}
-        </div>
+          {adoptado ? (
+            <span style={{
+              position: 'absolute', bottom: 18, left: '50%', transform: 'translateX(-50%)',
+              background: 'var(--status-success)', color: '#fff', whiteSpace: 'nowrap',
+              font: 'var(--font-body-sm)', fontWeight: 700, padding: '8px 18px',
+              borderRadius: 'var(--radius-pill)', boxShadow: 'var(--shadow-md)',
+            }}>Ya tiene familia</span>
+          ) : null}
+        </FotoArco>
 
         <div style={{ flex: 1, minWidth: 280 }}>
-          <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '0 0 16px' }}>{dog.name}</h1>
+          <h1 style={{ font: 'var(--font-h1)', letterSpacing: '-0.02em', color: 'var(--text-primary)', margin: '0 0 16px' }}>{dog.name}</h1>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, marginBottom: 24 }}>
             {FACTS.map((f) => (
@@ -98,7 +103,7 @@ function DogProfile({ dog, onBack, onAdoptar, onApadrinar }) {
           </div>
         </div>
       </div>
-    </div>
+    </Seccion>
   );
 }
 

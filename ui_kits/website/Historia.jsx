@@ -1,4 +1,5 @@
 function Historia() {
+  const { Seccion, Encabezado, Tarjeta } = window.UI;
   const steps = [
     { icon: 'heart-pulse', title: 'Rescate y recuperación', body: 'Atendemos sus necesidades físicas y emocionales, brindando atención médica, curaciones, vacunas, desparasitación y esterilización.' },
     { icon: 'sparkles', title: 'Rehabilitación', body: 'Trabajamos en su cuerpo, mente y alma. A través del entrenamiento, la socialización y la convivencia en hogares temporales, los ayudamos a recuperar la confianza.' },
@@ -6,9 +7,9 @@ function Historia() {
     { icon: 'home', title: 'Adopción responsable', body: 'Buscamos la familia ideal para cada uno, porque no buscamos simplemente un hogar; buscamos el hogar correcto para cada historia.' },
   ];
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto', padding: '56px 48px' }}>
+    <Seccion tono="crema" ancho={900}>
       <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-primary)', textTransform: 'uppercase' }}>Nuestra historia</span>
-      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '12px 0 24px' }}>Nació del amor, la empatía y el compromiso de cuatro amigas.</h1>
+      <h1 style={{ font: 'var(--font-h1)', letterSpacing: '-0.02em', color: 'var(--text-primary)', margin: '12px 0 24px' }}>Nació del amor, la empatía y el compromiso de cuatro amigas.</h1>
       <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)' }}>
         Cada una de nosotras, por separado, ya dedicaba tiempo y esfuerzo al rescate de perros en situación de calle. Con el tiempo, algunos casos nos unieron, comenzamos a trabajar juntas y descubrimos que nuestras habilidades se complementaban.
       </p>
@@ -29,7 +30,7 @@ function Historia() {
       <p style={{ font: 'var(--font-h3)', color: 'var(--action-primary)', textAlign: 'center', margin: '48px 0 0' }}>
         Rescatar es solo el comienzo; transformar una vida es nuestra verdadera misión.
       </p>
-    </div>
+    </Seccion>
   );
 }
 

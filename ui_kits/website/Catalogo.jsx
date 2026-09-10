@@ -2,6 +2,7 @@ const TODAS_ESPECIES = 'Todas las especies';
 const TODOS_TAMANOS = 'Todos los tamaños';
 
 function Catalogo({ onSeeDog }) {
+  const { Seccion, Encabezado, Tarjeta } = window.UI;
   const { Select, Button, DogCard } = window.AdoptaUnOlvidadoDesignSystem_167478;
   const [especie, setEspecie] = React.useState(TODAS_ESPECIES);
   const [tamano, setTamano] = React.useState(TODOS_TAMANOS);
@@ -37,9 +38,9 @@ function Catalogo({ onSeeDog }) {
   }
 
   return (
-    <div style={{ padding: '48px', maxWidth: 1100, margin: '0 auto' }}>
+    <Seccion tono="crema" ancho={1100}>
       <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-primary)', textTransform: 'uppercase' }}>Adopta</span>
-      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '10px 0 8px' }}>{T('catalogo.titulo', 'Cada uno espera su segunda oportunidad')}</h1>
+      <h1 style={{ font: 'var(--font-h1)', letterSpacing: '-0.02em', color: 'var(--text-primary)', margin: '10px 0 8px' }}>{T('catalogo.titulo', 'Cada uno espera su segunda oportunidad')}</h1>
       <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', marginBottom: 32, maxWidth: 640 }}>{T('catalogo.subtitulo', 'Filtra por especie y tamaño para encontrar a tu nuevo compañero de vida.')}</p>
 
       <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end', flexWrap: 'wrap', background: '#fff', padding: 20, borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', marginBottom: 36 }}>
@@ -76,7 +77,7 @@ function Catalogo({ onSeeDog }) {
           ))}
         </div>
       )}
-    </div>
+    </Seccion>
   );
 }
 

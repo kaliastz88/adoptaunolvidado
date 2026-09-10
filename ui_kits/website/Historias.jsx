@@ -1,4 +1,5 @@
 function Historias({ onSeeDog, onNavigate }) {
+  const { Seccion, Encabezado, Tarjeta } = window.UI;
   const { Badge, Button } = window.AdoptaUnOlvidadoDesignSystem_167478;
 
   // Las historias de éxito son, literalmente, los perros marcados como
@@ -17,9 +18,9 @@ function Historias({ onSeeDog, onNavigate }) {
   React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
 
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto', padding: '56px 48px' }}>
+    <Seccion tono="crema" ancho={1000}>
       <span style={{ font: 'var(--font-eyebrow)', color: 'var(--status-success)', textTransform: 'uppercase' }}>Historias de éxito</span>
-      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '12px 0 16px' }}>{T('historias.titulo', 'Cada adopción cambia dos vidas.')}</h1>
+      <h1 style={{ font: 'var(--font-h1)', letterSpacing: '-0.02em', color: 'var(--text-primary)', margin: '12px 0 16px' }}>{T('historias.titulo', 'Cada adopción cambia dos vidas.')}</h1>
       <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', marginBottom: 40, maxWidth: 660 }}>
         {T('historias.intro', 'Estas son algunas de las transformaciones que hemos acompañado. Rescatar es solo el comienzo.')}
       </p>
@@ -76,7 +77,7 @@ function Historias({ onSeeDog, onNavigate }) {
           <Button variant="primary" icon="paw-print" onClick={() => onNavigate('catalogo')}>Conoce a nuestros perritos</Button>
         </div>
       ) : null}
-    </div>
+    </Seccion>
   );
 }
 

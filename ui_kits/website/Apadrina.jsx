@@ -1,4 +1,5 @@
 function Apadrina({ onSeeDog, onNavigate }) {
+  const { Seccion, Encabezado, Tarjeta } = window.UI;
   const { Button, DogCard } = window.AdoptaUnOlvidadoDesignSystem_167478;
 
   // Se muestran perros reales, no un texto genérico. Apadrinar empieza por
@@ -28,9 +29,9 @@ function Apadrina({ onSeeDog, onNavigate }) {
   ];
 
   return (
-    <div style={{ maxWidth: 1000, margin: '0 auto', padding: '56px 48px' }}>
+    <Seccion tono="ambar" ancho={1000}>
       <span style={{ font: 'var(--font-eyebrow)', color: 'var(--action-sponsor)', textTransform: 'uppercase' }}>Apadrina</span>
-      <h1 style={{ font: 'var(--font-h1)', color: 'var(--text-primary)', margin: '12px 0 20px' }}>{T('apadrina.titulo', 'Acompaña una historia hasta su final feliz.')}</h1>
+      <h1 style={{ font: 'var(--font-h1)', letterSpacing: '-0.02em', color: 'var(--text-primary)', margin: '12px 0 20px' }}>{T('apadrina.titulo', 'Acompaña una historia hasta su final feliz.')}</h1>
       <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', marginBottom: 16, maxWidth: 680 }}>
         {T('apadrina.intro', 'Cuando apadrinas a uno de nuestros rescatados, te conviertes en parte de su camino: desde su recuperación hasta el momento en que encuentra una familia que lo ame para siempre.')}
       </p>
@@ -82,7 +83,7 @@ function Apadrina({ onSeeDog, onNavigate }) {
           Ser padrino es acompañar una historia, ser parte de una transformación.
         </p>
       </div>
-    </div>
+    </Seccion>
   );
 }
 
