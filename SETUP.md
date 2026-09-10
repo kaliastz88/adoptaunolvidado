@@ -244,6 +244,27 @@ redirección.
 
 ---
 
+## Publicar un cambio
+
+Antes de cada commit que toque archivos del sitio, hay que correr:
+
+```sh
+./versionar.sh
+```
+
+Le pone una marca de tiempo a cada script y hoja de estilo propios, de forma que
+la URL cambia en cada publicación.
+
+**No es opcional.** El navegador guarda los `.jsx` en caché y, sin esto, después
+de publicar sigue ejecutando los viejos: el sitio se ve idéntico y parece que la
+publicación no funcionó. Es especialmente confuso cuando varias personas revisan
+el sitio y unas ven la versión nueva y otras la vieja.
+
+Los enlaces a librerías externas no se tocan, porque esas sí conviene que se
+queden en caché.
+
+---
+
 ## Donaciones
 
 Los montos y los enlaces de cobro viven en un solo archivo:
