@@ -30,7 +30,7 @@ function Home({ onSeeDog, onNavigate }) {
       <section style={{
         position: 'relative',
         padding: '72px 48px 96px',
-        background: 'linear-gradient(165deg, var(--blue-50) 0%, var(--surface-page) 55%, var(--terracotta-50) 100%)',
+        background: 'linear-gradient(150deg, var(--blue-100) 0%, var(--blue-50) 38%, var(--amber-50) 100%)',
       }}>
         <div style={{
           maxWidth: 1100, margin: '0 auto', display: 'flex', flexWrap: 'wrap',
@@ -85,9 +85,10 @@ function Home({ onSeeDog, onNavigate }) {
       {/* HISTORIAS — solo aparece si hay perros adoptados que contar. Una
           sección vacía en la portada se lee como un sitio a medio hacer. */}
       {historias.length > 0 ? (
-        <Seccion tono="crema" curva>
+        <Seccion tono="ambar" curva>
           <Encabezado
-            eyebrow="Historias que transforman vidas"
+            tono="ambar"
+            eyebrow="Finales felices"
             titulo="De la calle a un hogar para siempre"
           />
           <div style={{ display: 'flex', gap: 24, flexWrap: 'wrap', marginTop: 40, alignItems: 'flex-start' }}>
@@ -123,18 +124,18 @@ function Home({ onSeeDog, onNavigate }) {
             ))}
           </div>
           <div style={{ marginTop: 36 }}>
-            <Button variant="secondary" icon="arrow-right" onClick={() => onNavigate('historias')}>Ver todas las historias</Button>
+            <Button variant="primary" icon="arrow-right" onClick={() => onNavigate('historias')}>Ver todos los finales felices</Button>
           </div>
         </Seccion>
       ) : null}
 
       {/* ALIADOS sobre ámbar, el tercer color de la marca. Tres tonos alternados
           bastan para dar ritmo; un cuarto empezaría a verse desordenado. */}
-      <Seccion tono="ambar" curva>
+      <Seccion tono="noche" curva>
         <div style={{ display: 'flex', gap: 48, flexWrap: 'wrap', alignItems: 'center' }}>
           <div style={{ flex: '1 1 460px', minWidth: 300 }}>
             <Encabezado
-              tono="ambar"
+              tono="noche"
               eyebrow="Aliados"
               titulo={T('home.aliados.titulo', 'Las grandes historias comienzan con una alianza.')}
               entrada={T('home.aliados.texto', 'En Adopta un Olvidado creemos que cambiar la vida de un perrito no es una tarea que podamos hacer solos. Hoy reconocemos a Hotel PupuClub, que abrió sus puertas como hogar temporal y espacio de rehabilitación para nuestros rescatados.')}
@@ -158,7 +159,7 @@ function Home({ onSeeDog, onNavigate }) {
 
       {/* CIERRE — última llamada antes del pie. Terminar en crema y sin nada
           más desaprovecha el único momento en que alguien ya leyó todo. */}
-      <Seccion tono="terracota" curva py={72}>
+      <Seccion tono="ambar" curva py={72}>
         <div style={{ textAlign: 'center' }}>
           <h2 style={{ font: 'var(--font-h2)', color: 'var(--text-primary)', margin: '0 0 12px', letterSpacing: '-0.02em' }}>
             {cuantos > 0 ? `${cuantos} esperan hoy.` : 'Cada uno espera su segunda oportunidad.'}

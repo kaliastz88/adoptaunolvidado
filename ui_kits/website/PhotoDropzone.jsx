@@ -12,7 +12,10 @@
 // cancelaste.
 //
 // Props:
-//   value          { photo, photo_path, photo_pos } del formulario
+//   value          el formulario completo
+//   campos         qué columnas usar, para poder reutilizarlo. Por defecto la
+//                  foto del rescate; la de la familia pasa las suyas.
+//   etiqueta       el título que se muestra encima
 //   onChange       recibe los campos de foto que cambiaron
 //   onUploadedPath se llama con la ruta de cada archivo recién subido, para que
 //                  el padre pueda borrarlo si al final cancelas
@@ -53,14 +56,16 @@ function IconoAlerta({ size = 16, color }) {
   );
 }
 
-function PhotoDropzone({ value, onChange, onUploadedPath }) {
+const CAMPOS_FOTO = { url: 'photo', ruta: 'photo_path', pos: 'photo_pos' };
+
+function PhotoDropzone({ value, onChange, onUploadedPath, campos = CAMPOS_FOTO, etiqueta = 'Foto', ayuda }) {
   const [dragging, setDragging] = React.useState(false);
   const [uploading, setUploading] = React.useState(false);
   const [error, setError] = React.useState('');
   const [preview, setPreview] = React.useState('');
 
   // Encuadre: se guarda como par de porcentajes, igual que background-position.
-  const pos = (value && value.photo_pos) || '50% 50%';
+  const pos = (value && value[campos.pos]) || '50% 50%';
   const [px, py] = pos.split(/\s+/).map((v) => parseFloat(v) || 50);
   const [arrastrando, setArrastrando] = React.useState(false);
   const marcoRef = React.useRef(null);
@@ -74,7 +79,7 @@ function PhotoDropzone({ value, onChange, onUploadedPath }) {
   // en la limpieza sin volver a suscribir el efecto.
   const previewRef = React.useRef('');
 
-  const fotoActual = preview || (value && value.photo) || '';
+  const fotoActual = preview || (value && value[campos.url]) || '';
   const tieneFoto = !!fotoActual;
 
   function liberarPreview() {
@@ -111,7 +116,11 @@ function PhotoDropzone({ value, onChange, onUploadedPath }) {
     try {
       const subida = await window.db.uploadPhoto(file);
       if (onUploadedPath) onUploadedPath(subida.photo_path);
-      onChange({ ...subida, photo_pos: '50% 50%' });
+      onChange({
+        [campos.url]: subida.photo,
+        [campos.ruta]: subida.photo_path,
+        [campos.pos]: '50% 50%',
+      });
       // A partir de aquí manda la URL real de Supabase, así que soltamos la local.
       liberarPreview();
       setPreview('');
@@ -162,7 +171,7 @@ function PhotoDropzone({ value, onChange, onUploadedPath }) {
     liberarPreview();
     setPreview('');
     setError('');
-    onChange({ photo: '', photo_path: '', photo_pos: '50% 50%' });
+    onChange({ [campos.url]: '', [campos.ruta]: '', [campos.pos]: '50% 50%' });
   }
 
   // Se apunta a lo que se quiere ver: donde caiga el dedo o el cursor, ese es el
@@ -189,7 +198,7 @@ function PhotoDropzone({ value, onChange, onUploadedPath }) {
 
   function centrar(e) {
     e.stopPropagation();
-    onChange({ photo_pos: '50% 50%' });
+    onChange({ [campos.pos]: '50% 50%' });
   }
 
   const borde = error
@@ -203,8 +212,11 @@ function PhotoDropzone({ value, onChange, onUploadedPath }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6, fontFamily: 'var(--font-body)' }}>
       <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--text-primary)' }}>
-        Foto
+        {etiqueta}
       </span>
+      {ayuda ? (
+        <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--text-muted)', marginTop: -2 }}>{ayuda}</span>
+      ) : null}
 
       <div
         ref={marcoRef}
@@ -226,7 +238,7 @@ function PhotoDropzone({ value, onChange, onUploadedPath }) {
           const mover = { ArrowUp: [0, -paso], ArrowDown: [0, paso], ArrowLeft: [-paso, 0], ArrowRight: [paso, 0] }[e.key];
           if (tieneFoto && mover) {
             e.preventDefault();
-            onChange({ photo_pos: `${Math.min(100, Math.max(0, px + mover[0]))}% ${Math.min(100, Math.max(0, py + mover[1]))}%` });
+            onChange({ [campos.pos]: `${Math.min(100, Math.max(0, px + mover[0]))}% ${Math.min(100, Math.max(0, py + mover[1]))}%` });
           }
         }}
         tabIndex={0}
@@ -386,3 +398,4 @@ if (!document.getElementById('adopta-spin-keyframes')) {
 }
 
 window.PhotoDropzone = PhotoDropzone;
+window.CAMPOS_FOTO_FAMILIA = { url: 'foto_familia', ruta: 'foto_familia_path', pos: 'foto_familia_pos' };

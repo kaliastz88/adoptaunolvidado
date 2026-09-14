@@ -11,7 +11,9 @@ function emptyForm() {
   return {
     id: null, name: '', species: 'Perro', age: '', size: 'Mediano',
     status: 'Disponible', energy: 'Media', compat: '', bio: '',
-    salud: '', estatus_medico: '', photo: '', photo_path: '',
+    salud: '', estatus_medico: '', photo: '', photo_path: '', photo_pos: '50% 50%',
+    foto_familia: '', foto_familia_path: '', foto_familia_pos: '50% 50%',
+    historia_final: '', fecha_adopcion: '',
   };
 }
 
@@ -290,10 +292,12 @@ function AdminPanel({ acceso }) {
   // saber si vas a guardar o cancelar, así que hay que recordar cuáles quedaron
   // de sobra en cada caso y borrarlas del almacenamiento.
   //   subidas   → todo lo que se subió mientras el modal estuvo abierto
-  //   fotoPrevia → la que ya tenía el animal al abrir el modal
+  //   fotoPrevia → las que ya tenía el animal al abrir el modal
   // En refs y no en estado porque solo se leen dentro de los manejadores.
   const subidas = React.useRef([]);
-  const fotoPrevia = React.useRef('');
+  // Arreglo, no cadena: un perro adoptado tiene dos fotos que pueden quedar
+  // huérfanas, la del rescate y la de su familia.
+  const fotoPrevia = React.useRef([]);
 
   React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
 
@@ -324,7 +328,7 @@ function AdminPanel({ acceso }) {
   function openNew() {
     setForm(emptyForm());
     subidas.current = [];
-    fotoPrevia.current = '';
+    fotoPrevia.current = [];
     setErrorForm('');
     setModalOpen(true);
   }
@@ -334,7 +338,7 @@ function AdminPanel({ acceso }) {
     // por campo y no debe tocar la fila que ya está en pantalla.
     setForm({ ...a });
     subidas.current = [];
-    fotoPrevia.current = a.photo_path || '';
+    fotoPrevia.current = [a.photo_path, a.foto_familia_path].filter(Boolean);
     setErrorForm('');
     setModalOpen(true);
   }
@@ -356,13 +360,13 @@ function AdminPanel({ acceso }) {
 
       // Ya está guardado: sobran las fotos subidas que no quedaron elegidas,
       // y la anterior si la reemplazaste o la quitaste.
-      const conservada = form.photo_path;
+      const conservadas = [form.photo_path, form.foto_familia_path].filter(Boolean);
       subidas.current
-        .filter((p) => p !== conservada)
+        .filter((p) => !conservadas.includes(p))
         .forEach((p) => window.db.deletePhoto(p));
-      if (fotoPrevia.current && fotoPrevia.current !== conservada) {
-        window.db.deletePhoto(fotoPrevia.current);
-      }
+      fotoPrevia.current
+        .filter((p) => !conservadas.includes(p))
+        .forEach((p) => window.db.deletePhoto(p));
       subidas.current = [];
 
       setModalOpen(false);
@@ -1289,6 +1293,41 @@ function AnimalFormModal({ open, form, setForm, onClose, onSave, guardando, erro
         <Input label="Compatibilidad" placeholder="Ej. Niños, otros perros" value={form.compat} onChange={(e) => set('compat', e.target.value)} />
         <Input label="Protocolo de salud" placeholder="Ej. Completo con vacunación y esterilización" value={form.salud} onChange={(e) => set('salud', e.target.value)} />
         <Input label="Estatus médico" placeholder="Ej. Saludable" value={form.estatus_medico} onChange={(e) => set('estatus_medico', e.target.value)} />
+
+        {/* Solo para adoptados. Mostrarlo siempre alargaría el formulario con
+            campos que no aplican al 70% de los perritos. */}
+        {form.status === 'Adoptado' ? (
+          <div style={{
+            background: 'var(--status-success-bg)', borderRadius: 'var(--radius-sm)',
+            padding: 18, display: 'flex', flexDirection: 'column', gap: 14,
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <i data-lucide="party-popper" style={{ width: 18, height: 18, color: 'var(--sage-600)' }} />
+              <span style={{ font: 'var(--font-body-sm)', fontWeight: 700, color: 'var(--sage-600)' }}>
+                Su final feliz
+              </span>
+            </div>
+            <PhotoDropzone
+              value={form}
+              campos={window.CAMPOS_FOTO_FAMILIA}
+              etiqueta="Foto con su nueva familia"
+              ayuda="Se muestra junto a la del rescate en la página de Finales felices."
+              onChange={(foto) => setForm((f) => ({ ...f, ...foto }))}
+              onUploadedPath={onUploadedPath}
+            />
+            <Input label="¿Cuándo lo adoptaron?" placeholder="Ej. marzo de 2026"
+                   value={form.fecha_adopcion} onChange={(e) => set('fecha_adopcion', e.target.value)} />
+            <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--text-primary)' }}>
+                ¿Cómo le va en su nuevo hogar?
+              </span>
+              <textarea value={form.historia_final} onChange={(e) => set('historia_final', e.target.value)} rows={3}
+                placeholder="Cuenta cómo cambió su vida. Es lo que convence a quien duda si adoptar."
+                style={{ font: 'var(--font-body-base)', padding: '12px 16px', borderRadius: 'var(--radius-input)',
+                         border: '1.5px solid var(--border-default)', resize: 'vertical', fontFamily: 'var(--font-body)' }} />
+            </label>
+          </div>
+        ) : null}
 
         <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <span style={{ fontSize: 'var(--text-sm)', fontWeight: 600, color: 'var(--text-primary)' }}>Biografía</span>

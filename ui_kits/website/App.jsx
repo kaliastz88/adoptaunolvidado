@@ -9,8 +9,8 @@ function Logo({ inverse }) {
   );
 }
 
-const NAV = ['Adopta', 'Apadrina', 'Historias', 'Aliados', 'Voluntario', 'Nuestra historia', 'Preguntas frecuentes', 'Contacto'];
-const ROUTES = { 'Adopta': 'catalogo', 'Apadrina': 'apadrina', 'Historias': 'historias', 'Aliados': 'aliados', 'Voluntario': 'voluntario', 'Nuestra historia': 'historia', 'Preguntas frecuentes': 'faq', 'Contacto': 'contacto' };
+const NAV = ['Adopta', 'Apadrina', 'Finales felices', 'Aliados', 'Voluntario', 'Nuestra historia', 'Preguntas frecuentes', 'Contacto'];
+const ROUTES = { 'Adopta': 'catalogo', 'Apadrina': 'apadrina', 'Finales felices': 'historias', 'Aliados': 'aliados', 'Voluntario': 'voluntario', 'Nuestra historia': 'historia', 'Preguntas frecuentes': 'faq', 'Contacto': 'contacto' };
 
 function App() {
   const [route, setRoute] = React.useState('home');

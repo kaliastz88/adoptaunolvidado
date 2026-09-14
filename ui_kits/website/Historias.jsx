@@ -2,83 +2,121 @@ function Historias({ onSeeDog, onNavigate }) {
   const { Seccion, Encabezado, Tarjeta } = window.UI;
   const { Badge, Button } = window.AdoptaUnOlvidadoDesignSystem_167478;
 
-  // Las historias de éxito son, literalmente, los perros marcados como
-  // "Adoptado" en el panel. No hay una lista aparte que mantener al día: al
-  // cambiarle el estado a un perro, se mueve solo del catálogo a esta página.
-  const [historias, setHistorias] = React.useState(null);
+  // Los finales felices son, literalmente, los perros marcados como "Adoptado"
+  // en el panel. No hay una lista aparte que mantener al día: al cambiarle el
+  // estado a un perro se mueve solo del catálogo a esta página.
+  const [finales, setFinales] = React.useState(null);
 
   React.useEffect(() => {
     let vivo = true;
     window.db.listAnimals()
-      .then((todos) => { if (vivo) setHistorias(todos.filter((a) => a.status === 'Adoptado')); })
-      .catch(() => { if (vivo) setHistorias([]); });
+      .then((todos) => { if (vivo) setFinales(todos.filter((a) => a.status === 'Adoptado')); })
+      .catch(() => { if (vivo) setFinales([]); });
     return () => { vivo = false; };
   }, []);
 
   React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
 
+  // El antes y el ahora, lado a lado. Es la pieza central de la página: una
+  // foto de un perro feliz no dice nada por sí sola; junto a la del rescate lo
+  // dice todo. Si todavía no hay foto de familia, la del rescate ocupa el ancho
+  // completo en vez de dejar un hueco.
+  function AntesYAhora({ a }) {
+    const tieneFamilia = !!a.foto_familia;
+    return (
+      <div style={{ display: 'grid', gridTemplateColumns: tieneFamilia ? '1fr 1fr' : '1fr', height: 230 }}>
+        <div style={{
+          position: 'relative',
+          background: a.photo
+            ? `${a.photo_pos || 'center'}/cover no-repeat url(${a.photo})`
+            : 'linear-gradient(120deg, var(--blue-100), var(--terracotta-50))',
+        }}>
+          {tieneFamilia ? <span style={etiquetaFoto}>Antes</span> : null}
+        </div>
+        {tieneFamilia ? (
+          <div style={{
+            position: 'relative',
+            background: `${a.foto_familia_pos || 'center'}/cover no-repeat url(${a.foto_familia})`,
+            borderLeft: '3px solid var(--surface-card)',
+          }}>
+            <span style={{ ...etiquetaFoto, background: 'var(--status-success)' }}>Ahora</span>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
   return (
-    <Seccion tono="crema" ancho={1000}>
-      <span style={{ font: 'var(--font-eyebrow)', color: 'var(--status-success)', textTransform: 'uppercase' }}>Historias de éxito</span>
-      <h1 style={{ font: 'var(--font-h1)', letterSpacing: '-0.02em', color: 'var(--text-primary)', margin: '12px 0 16px' }}>{T('historias.titulo', 'Cada adopción cambia dos vidas.')}</h1>
-      <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', marginBottom: 40, maxWidth: 660 }}>
-        {T('historias.intro', 'Estas son algunas de las transformaciones que hemos acompañado. Rescatar es solo el comienzo.')}
-      </p>
+    <Seccion tono="crema" ancho={1060}>
+      <Encabezado
+        eyebrow="Finales felices"
+        titulo={T('historias.titulo', 'Cada adopción cambia dos vidas.')}
+        entrada={T('historias.intro', 'Estas son algunas de las transformaciones que hemos acompañado. Rescatar es solo el comienzo.')}
+      />
 
-      {historias === null ? (
-        <p style={{ font: 'var(--font-body-base)', color: 'var(--text-muted)' }}>Cargando historias...</p>
-      ) : historias.length === 0 ? (
-        <div style={{ background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', padding: '48px 32px', textAlign: 'center' }}>
-          <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', margin: '0 0 20px' }}>
-            Todavía no hemos publicado ninguna historia de adopción. Aquí va a aparecer
-            cada perrito que encuentre su hogar.
-          </p>
-          <Button variant="primary" icon="paw-print" onClick={() => onNavigate('catalogo')}>
-            Conoce a los que siguen esperando
-          </Button>
-        </div>
-      ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 22 }}>
-          {historias.map((s) => (
-            <div
-              key={s.id}
-              onClick={() => onSeeDog(s)}
-              style={{ background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', overflow: 'hidden', cursor: 'pointer' }}
-            >
-              <div style={{
-                height: 180,
-                background: s.photo
-                  ? `${s.photo_pos || 'center'}/cover no-repeat url(${s.photo})`
-                  : 'linear-gradient(120deg, var(--sage-100), var(--blue-100))',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--sage-600)',
-              }}>
-                {!s.photo ? <i data-lucide="images" style={{ width: 34, height: 34 }} /> : null}
-              </div>
-              <div style={{ padding: 24 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 10 }}>
-                  <h3 style={{ font: 'var(--font-h4)', color: 'var(--text-primary)', margin: 0 }}>{s.name}</h3>
-                  <Badge tone="success" icon="check">Adoptado</Badge>
+      <div style={{ marginTop: 44 }}>
+        {finales === null ? (
+          <p style={{ font: 'var(--font-body-base)', color: 'var(--text-muted)' }}>Cargando finales felices...</p>
+        ) : finales.length === 0 ? (
+          <Tarjeta style={{ padding: '48px 32px', textAlign: 'center' }}>
+            <p style={{ font: 'var(--font-body-lg)', color: 'var(--text-secondary)', margin: '0 0 20px' }}>
+              Todavía no hemos publicado ningún final feliz. Aquí va a aparecer cada
+              perrito que encuentre su hogar.
+            </p>
+            <Button variant="primary" icon="paw-print" onClick={() => onNavigate('catalogo')}>
+              Conoce a los que siguen esperando
+            </Button>
+          </Tarjeta>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 26, alignItems: 'start' }}>
+            {finales.map((a, i) => (
+              <Tarjeta
+                key={a.id}
+                onClick={() => onSeeDog(a)}
+                style={{ marginTop: i % 2 === 1 ? 30 : 0 }}
+              >
+                <AntesYAhora a={a} />
+                <div style={{ padding: 26 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10, marginBottom: 10 }}>
+                    <h3 style={{ font: 'var(--font-h4)', color: 'var(--text-primary)', margin: 0 }}>{a.name}</h3>
+                    <Badge tone="success" icon="check">Adoptado</Badge>
+                  </div>
+                  {a.fecha_adopcion ? (
+                    <div style={{ font: 'var(--font-caption)', color: 'var(--status-success)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 'var(--tracking-wider)', marginBottom: 10 }}>
+                      Encontró familia en {a.fecha_adopcion}
+                    </div>
+                  ) : null}
+                  <p style={{ font: 'var(--font-body-base)', color: 'var(--text-primary)', margin: '0 0 12px' }}>
+                    {a.historia_final || a.bio || 'Encontró la familia que lo estaba esperando.'}
+                  </p>
+                  <span style={{ font: 'var(--font-caption)', color: 'var(--text-muted)' }}>
+                    {[a.age, a.size].filter(Boolean).join(' · ')}
+                  </span>
                 </div>
-                <p style={{ font: 'var(--font-body-base)', color: 'var(--text-primary)', margin: '0 0 12px' }}>
-                  {s.bio || 'Encontró la familia que lo estaba esperando.'}
-                </p>
-                <span style={{ font: 'var(--font-caption)', color: 'var(--text-muted)' }}>
-                  {[s.age, s.size].filter(Boolean).join(' · ')}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+              </Tarjeta>
+            ))}
+          </div>
+        )}
+      </div>
 
-      {historias && historias.length > 0 ? (
-        <div style={{ textAlign: 'center', marginTop: 48 }}>
-          <p style={{ font: 'var(--font-h3)', color: 'var(--status-success)', marginBottom: 20 }}>¿Quieres ser parte de la próxima historia?</p>
-          <Button variant="primary" icon="paw-print" onClick={() => onNavigate('catalogo')}>Conoce a nuestros perritos</Button>
+      {finales && finales.length > 0 ? (
+        <div style={{ textAlign: 'center', marginTop: 56 }}>
+          <p style={{ font: 'var(--font-h3)', color: 'var(--status-success)', marginBottom: 20 }}>
+            ¿Quieres ser parte del próximo final feliz?
+          </p>
+          <Button variant="primary" icon="paw-print" wag onClick={() => onNavigate('catalogo')}>Conoce a nuestros perritos</Button>
         </div>
       ) : null}
     </Seccion>
   );
 }
+
+const etiquetaFoto = {
+  position: 'absolute', top: 12, left: 12,
+  background: 'var(--blue-600)', color: '#fff',
+  font: 'var(--font-caption)', fontWeight: 700,
+  padding: '4px 12px', borderRadius: 'var(--radius-pill)',
+  textTransform: 'uppercase', letterSpacing: 'var(--tracking-wider)',
+};
 
 window.WebsiteScreens = { ...window.WebsiteScreens, Historias };
