@@ -126,32 +126,68 @@ function Cifra({ valor, etiqueta, tono = 'crema' }) {
   );
 }
 
-// Franja delgada con huellas repetidas. Sirve de respiro entre dos secciones
-// que si no quedarían pegadas.
-function FranjaHuellas({ tono = 'azul' }) {
+// Franja de huellas. Va como imagen de fondo repetida y no como una lista de
+// elementos: con flex y separación fija quedaban centradas y sobraba espacio en
+// los lados de las pantallas anchas. Repetida, la línea siempre llega completa.
+function FranjaHuellas({ tono = 'azul', alto = 54, tamano = 30 }) {
   const t = TONOS[tono] || TONOS.azul;
-  const huellas = [];
-  for (let i = 0; i < 14; i++) {
-    huellas.push(
-      <span key={i} style={{ opacity: 0.28, transform: `rotate(${i % 2 ? 16 : -12}deg)`, display: 'inline-flex' }}>
-        <svg width="26" height="26" viewBox="0 0 110 110" aria-hidden="true">
-          <g fill={t.acento}>
-            <ellipse cx="28" cy="34" rx="11" ry="14" transform="rotate(-22 28 34)" />
-            <ellipse cx="50" cy="22" rx="11" ry="15" transform="rotate(-6 50 22)" />
-            <ellipse cx="73" cy="26" rx="11" ry="15" transform="rotate(12 73 26)" />
-            <ellipse cx="91" cy="48" rx="10" ry="13" transform="rotate(32 91 48)" />
-            <ellipse cx="57" cy="74" rx="27" ry="23" />
-          </g>
-        </svg>
-      </span>
-    );
-  }
+  const color = tono === 'azul' || tono === 'noche' ? '#FEBC1A' : '#021C4B';
+  const patita = encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="0 0 110 110">`
+    + `<g fill="${color}" opacity="0.3">`
+    + '<ellipse cx="28" cy="34" rx="11" ry="14" transform="rotate(-22 28 34)"/>'
+    + '<ellipse cx="50" cy="22" rx="11" ry="15" transform="rotate(-6 50 22)"/>'
+    + '<ellipse cx="73" cy="26" rx="11" ry="15" transform="rotate(12 73 26)"/>'
+    + '<ellipse cx="91" cy="48" rx="10" ry="13" transform="rotate(32 91 48)"/>'
+    + '<ellipse cx="57" cy="74" rx="27" ry="23"/>'
+    + '</g></svg>'
+  );
   return (
     <div aria-hidden="true" style={{
-      background: t.fondo, padding: '18px 24px', display: 'flex',
-      justifyContent: 'center', gap: 26, flexWrap: 'wrap', overflow: 'hidden',
-    }}>
-      {huellas}
+      background: `${t.fondo} url("data:image/svg+xml,${patita}") repeat-x center`,
+      backgroundSize: `${tamano + 20}px ${tamano}px`,
+      height: alto,
+    }} />
+  );
+}
+
+// Marco en forma de patita: cuatro dedos arriba y la almohadilla abajo, que es
+// la que contiene el texto o la foto.
+//
+// El contenido va en la almohadilla y no recortado contra la silueta completa
+// de la patita: un recorte así se come las esquinas del texto y parte las
+// palabras. Los dedos quedan como adorno encima.
+function MarcoPatita({ tono = 'ambar', children, style }) {
+  const relleno = tono === 'ambar' ? 'var(--amber-500)' : 'var(--action-primary)';
+  const DEDOS = [
+    { left: '6%',  size: 62, rot: -20, bottom: -8 },
+    { left: '28%', size: 72, rot: -6,  bottom: 6 },
+    { left: '54%', size: 72, rot: 8,   bottom: 6 },
+    { left: '78%', size: 60, rot: 26,  bottom: -8 },
+  ];
+  return (
+    <div style={{ position: 'relative', paddingTop: 52, ...style }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 64 }} aria-hidden="true">
+        {DEDOS.map((d, i) => (
+          <div key={i} style={{
+            position: 'absolute', left: d.left, bottom: d.bottom,
+            width: d.size, height: d.size * 1.25,
+            background: relleno, borderRadius: '50%',
+            transform: `rotate(${d.rot}deg)`,
+          }} />
+        ))}
+      </div>
+      <div style={{
+        position: 'relative',
+        background: relleno,
+        // Más redondeado arriba que abajo: es lo que le da forma de almohadilla
+        // en vez de caja con esquinas redondas.
+        borderRadius: '46% 46% 38% 38% / 38% 38% 30% 30%',
+        padding: '56px 52px 48px',
+        boxShadow: 'var(--shadow-lg)',
+      }}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -181,4 +217,4 @@ function Tarjeta({ children, onClick, style }) {
   );
 }
 
-window.UI = { TONOS, Seccion, Curva, Encabezado, FotoArco, Cifra, FranjaHuellas, Tarjeta };
+window.UI = { TONOS, Seccion, Curva, Encabezado, FotoArco, Cifra, FranjaHuellas, MarcoPatita, Tarjeta };

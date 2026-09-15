@@ -1,6 +1,6 @@
 function Home({ onSeeDog, onNavigate }) {
   const { Button, Modal } = window.AdoptaUnOlvidadoDesignSystem_167478;
-  const { Seccion, Encabezado, Cifra, FranjaHuellas, Tarjeta } = window.UI;
+  const { Seccion, Encabezado, Cifra, FranjaHuellas, MarcoPatita, Tarjeta } = window.UI;
   const [open, setOpen] = React.useState(false);
 
   // Las historias son los perros que ya encontraron familia. Se leen de la base
@@ -72,7 +72,7 @@ function Home({ onSeeDog, onNavigate }) {
 
       {/* CIFRAS sobre azul a sangre. El bloque de color es lo que rompe la
           sucesión de crema y hace que el sitio deje de leerse plano. */}
-      <Seccion tono="azul" curva py={64}>
+      <Seccion tono="azul" curva py={40}>
         <div style={{ display: 'flex', gap: 40, justifyContent: 'space-around', flexWrap: 'wrap' }}>
           <Cifra tono="azul" valor={T('home.stat1.valor', '+60')} etiqueta={T('home.stat1.etiqueta', 'perritos con hogar')} />
           <Cifra tono="azul" valor={T('home.stat2.valor', '4')} etiqueta={T('home.stat2.etiqueta', 'fundadoras')} />
@@ -80,7 +80,7 @@ function Home({ onSeeDog, onNavigate }) {
         </div>
       </Seccion>
 
-      <FranjaHuellas tono="azul" />
+      <FranjaHuellas tono="azul" alto={44} tamano={26} />
 
       {/* HISTORIAS — solo aparece si hay perros adoptados que contar. Una
           sección vacía en la portada se lee como un sitio a medio hacer. */}
@@ -128,6 +128,27 @@ function Home({ onSeeDog, onNavigate }) {
           </div>
         </Seccion>
       ) : null}
+
+      {/* MENSAJE en recuadro de patita. Va justo después de las historias para
+          que lo lea quien acaba de ver que esto funciona. */}
+      <Seccion tono="crema" py={72}>
+        <div style={{ maxWidth: 720, margin: '0 auto' }}>
+          <MarcoPatita tono="ambar">
+            <p style={{
+              font: 'var(--font-h3)', color: 'var(--blue-600)', margin: 0,
+              textAlign: 'center', lineHeight: 1.35,
+            }}>
+              {T('home.patita.texto', 'Ninguno de ellos eligió la calle. Pero tú sí puedes elegir sacarlos de ahí.')}
+            </p>
+            <p style={{
+              font: 'var(--font-body-base)', color: 'var(--blue-600)', opacity: 0.85,
+              margin: '16px 0 0', textAlign: 'center',
+            }}>
+              {T('home.patita.firma', 'Las cuatro fundadoras de Adopta un Olvidado')}
+            </p>
+          </MarcoPatita>
+        </div>
+      </Seccion>
 
       {/* ALIADOS sobre ámbar, el tercer color de la marca. Tres tonos alternados
           bastan para dar ritmo; un cuarto empezaría a verse desordenado. */}

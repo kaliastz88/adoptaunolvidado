@@ -78,6 +78,9 @@ insert into public.site_texts (clave, valor, seccion, etiqueta, ayuda, multiline
   ('home.aliados.titulo', 'Las grandes historias comienzan con una alianza.', 'Portada', 'Título de la sección de aliados', '', true, 100),
   ('home.aliados.texto', 'En Adopta un Olvidado creemos que cambiar la vida de un perrito no es una tarea que podamos hacer solos. Hoy reconocemos a Hotel PupuClub, que abrió sus puertas como hogar temporal y espacio de rehabilitación para nuestros rescatados.', 'Portada', 'Texto de la sección de aliados', 'Aquí se menciona a las marcas aliadas.', true, 110),
 
+  ('home.patita.texto', 'Ninguno de ellos eligió la calle. Pero tú sí puedes elegir sacarlos de ahí.', 'Portada', 'Mensaje del recuadro de patita', 'La frase grande dentro de la patita amarilla.', true, 115),
+  ('home.patita.firma', 'Las cuatro fundadoras de Adopta un Olvidado', 'Portada', 'Firma del recuadro de patita', 'Déjalo vacío si no quieres que aparezca.', false, 116),
+
   ('catalogo.titulo', 'Cada uno espera su segunda oportunidad', 'Adopta', 'Título del catálogo', '', true, 10),
   ('catalogo.subtitulo', 'Filtra por especie y tamaño para encontrar a tu nuevo compañero de vida.', 'Adopta', 'Frase de presentación', '', true, 20),
 
