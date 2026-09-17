@@ -151,43 +151,84 @@ function FranjaHuellas({ tono = 'azul', alto = 54, tamano = 30 }) {
   );
 }
 
-// Marco en forma de patita: cuatro dedos arriba y la almohadilla abajo, que es
-// la que contiene el texto o la foto.
+// Patita con una foto dentro.
 //
-// El contenido va en la almohadilla y no recortado contra la silueta completa
-// de la patita: un recorte así se come las esquinas del texto y parte las
-// palabras. Los dedos quedan como adorno encima.
-function MarcoPatita({ tono = 'ambar', children, style }) {
-  const relleno = tono === 'ambar' ? 'var(--amber-500)' : 'var(--action-primary)';
-  const DEDOS = [
-    { left: '6%',  size: 62, rot: -20, bottom: -8 },
-    { left: '28%', size: 72, rot: -6,  bottom: 6 },
-    { left: '54%', size: 72, rot: 8,   bottom: 6 },
-    { left: '78%', size: 60, rot: 26,  bottom: -8 },
-  ];
+// El intento anterior metía el texto en la almohadilla y la estiraba a lo ancho
+// para que cupiera. El resultado no era una patita sino un óvalo con cuatro
+// huevos flotando encima: un texto largo necesita una caja ancha, y una patita
+// necesita proporción, y no se pueden tener las dos en la misma forma.
+//
+// Aquí la patita conserva su proporción real y lo que la llena es una foto, que
+// se adapta a cualquier forma sin deformarse. El texto va al lado, donde se
+// puede leer.
+const PATITA = {
+  vista: '0 0 104 112',
+  // Cuatro dedos en arco y la almohadilla abajo, con las medidas de una patita
+  // de verdad. Cambiarlas rompe la silueta, así que van juntas y no sueltas.
+  formas: [
+    { cx: 17, cy: 47, rx: 11,   ry: 14,   rot: -22 },
+    { cx: 39, cy: 29, rx: 12,   ry: 15.5, rot: -8 },
+    { cx: 64, cy: 29, rx: 12,   ry: 15.5, rot: 8 },
+    { cx: 87, cy: 47, rx: 11,   ry: 14,   rot: 22 },
+    { cx: 52, cy: 82, rx: 30,   ry: 26,   rot: 0 },
+  ],
+};
+
+function siluetaPatita(id) {
+  return PATITA.formas.map((f, i) => (
+    <ellipse key={i} cx={f.cx} cy={f.cy} rx={f.rx} ry={f.ry}
+             transform={f.rot ? `rotate(${f.rot} ${f.cx} ${f.cy})` : undefined} />
+  ));
+}
+
+function PatitaFoto({ src, ancho = 340, color = 'var(--amber-500)', style }) {
+  // El id tiene que ser único: dos patitas en la misma página con el mismo id
+  // de recorte hacen que la segunda use el recorte de la primera.
+  const id = React.useMemo(() => 'patita-' + Math.random().toString(36).slice(2, 9), []);
+  const alto = ancho * 112 / 104;
+  const pad = PATITA.formas[4];
+  const dedos = PATITA.formas.slice(0, 4);
+
   return (
-    <div style={{ position: 'relative', paddingTop: 52, ...style }}>
-      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 64 }} aria-hidden="true">
-        {DEDOS.map((d, i) => (
-          <div key={i} style={{
-            position: 'absolute', left: d.left, bottom: d.bottom,
-            width: d.size, height: d.size * 1.25,
-            background: relleno, borderRadius: '50%',
-            transform: `rotate(${d.rot}deg)`,
-          }} />
-        ))}
-      </div>
-      <div style={{
-        position: 'relative',
-        background: relleno,
-        // Más redondeado arriba que abajo: es lo que le da forma de almohadilla
-        // en vez de caja con esquinas redondas.
-        borderRadius: '46% 46% 38% 38% / 38% 38% 30% 30%',
-        padding: '56px 52px 48px',
-        boxShadow: 'var(--shadow-lg)',
-      }}>
-        {children}
-      </div>
+    <div style={{ position: 'relative', width: ancho, height: alto, flexShrink: 0, ...style }}>
+      <svg viewBox={PATITA.vista} width={ancho} height={alto}
+           role={src ? 'img' : undefined}
+           aria-label={src ? 'Uno de nuestros rescatados' : undefined}
+           style={{ display: 'block', overflow: 'visible' }}>
+        <defs>
+          {/* Solo la almohadilla recorta la foto. Recortarla contra la patita
+              entera la parte en cinco trozos sueltos y se pierde de qué es la
+              imagen; en la almohadilla se ve una cara completa. */}
+          <clipPath id={id}>
+            <ellipse cx={pad.cx} cy={pad.cy} rx={pad.rx} ry={pad.ry} />
+          </clipPath>
+        </defs>
+
+        {/* Patita amarilla detrás, corrida unos píxeles: da profundidad y
+            mantiene el color de marca aunque la foto sea oscura. */}
+        <g fill={color} opacity="0.55" transform="translate(5 6)">
+          {siluetaPatita()}
+        </g>
+
+        <g fill={color}>
+          {dedos.map((f, i) => (
+            <ellipse key={i} cx={f.cx} cy={f.cy} rx={f.rx} ry={f.ry}
+                     transform={f.rot ? `rotate(${f.rot} ${f.cx} ${f.cy})` : undefined} />
+          ))}
+        </g>
+
+        {src ? (
+          // La foto se encuadra sobre la almohadilla y no sobre el lienzo
+          // entero: centrada en el lienzo, lo que asomaría por la almohadilla
+          // sería la parte de abajo de la imagen, casi siempre el cuerpo.
+          <image href={src}
+                 x={pad.cx - pad.rx} y={pad.cy - pad.ry}
+                 width={pad.rx * 2} height={pad.ry * 2}
+                 preserveAspectRatio="xMidYMid slice" clipPath={`url(#${id})`} />
+        ) : (
+          <ellipse cx={pad.cx} cy={pad.cy} rx={pad.rx} ry={pad.ry} fill="var(--blue-600)" />
+        )}
+      </svg>
     </div>
   );
 }
@@ -217,4 +258,4 @@ function Tarjeta({ children, onClick, style }) {
   );
 }
 
-window.UI = { TONOS, Seccion, Curva, Encabezado, FotoArco, Cifra, FranjaHuellas, MarcoPatita, Tarjeta };
+window.UI = { TONOS, Seccion, Curva, Encabezado, FotoArco, Cifra, FranjaHuellas, PatitaFoto, Tarjeta };

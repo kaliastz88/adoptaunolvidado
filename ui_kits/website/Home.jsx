@@ -1,6 +1,6 @@
 function Home({ onSeeDog, onNavigate }) {
   const { Button, Modal } = window.AdoptaUnOlvidadoDesignSystem_167478;
-  const { Seccion, Encabezado, Cifra, FranjaHuellas, MarcoPatita, Tarjeta } = window.UI;
+  const { Seccion, Encabezado, Cifra, FranjaHuellas, PatitaFoto, Tarjeta } = window.UI;
   const [open, setOpen] = React.useState(false);
 
   // Las historias son los perros que ya encontraron familia. Se leen de la base
@@ -8,6 +8,7 @@ function Home({ onSeeDog, onNavigate }) {
   // el panel lo mueve solo del catálogo a esta sección.
   const [historias, setHistorias] = React.useState([]);
   const [cuantos, setCuantos] = React.useState(0);
+  const [fotoPatita, setFotoPatita] = React.useState('');
 
   React.useEffect(() => {
     let vivo = true;
@@ -16,6 +17,11 @@ function Home({ onSeeDog, onNavigate }) {
         if (!vivo) return;
         setHistorias(todos.filter((a) => a.status === 'Adoptado').slice(0, 3));
         setCuantos(todos.filter((a) => a.status !== 'Adoptado').length);
+        // Se prefiere un adoptado con su foto de familia: dentro de la patita,
+        // esa es la imagen que mejor cuenta de qué va todo esto.
+        const conFamilia = todos.find((a) => a.foto_familia);
+        const conFoto = todos.find((a) => a.photo);
+        setFotoPatita((conFamilia && conFamilia.foto_familia) || (conFoto && conFoto.photo) || '');
       })
       .catch(() => {});
     return () => { vivo = false; };
@@ -129,24 +135,24 @@ function Home({ onSeeDog, onNavigate }) {
         </Seccion>
       ) : null}
 
-      {/* MENSAJE en recuadro de patita. Va justo después de las historias para
-          que lo lea quien acaba de ver que esto funciona. */}
-      <Seccion tono="crema" py={72}>
-        <div style={{ maxWidth: 720, margin: '0 auto' }}>
-          <MarcoPatita tono="ambar">
+      {/* MENSAJE con la patita al lado. La foto va dentro de la silueta y el
+          texto en su propia columna, donde se puede leer de corrido. */}
+      <Seccion tono="crema" py={80}>
+        <div style={{ display: 'flex', gap: 56, alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <PatitaFoto src={fotoPatita} ancho={320} />
+          <div style={{ flex: '1 1 380px', minWidth: 300, maxWidth: 520 }}>
             <p style={{
-              font: 'var(--font-h3)', color: 'var(--blue-600)', margin: 0,
-              textAlign: 'center', lineHeight: 1.35,
+              font: 'var(--font-h3)', color: 'var(--text-primary)', margin: 0,
+              lineHeight: 1.3, letterSpacing: '-0.01em',
             }}>
               {T('home.patita.texto', 'Ninguno de ellos eligió la calle. Pero tú sí puedes elegir sacarlos de ahí.')}
             </p>
-            <p style={{
-              font: 'var(--font-body-base)', color: 'var(--blue-600)', opacity: 0.85,
-              margin: '16px 0 0', textAlign: 'center',
-            }}>
-              {T('home.patita.firma', 'Las cuatro fundadoras de Adopta un Olvidado')}
-            </p>
-          </MarcoPatita>
+            {T('home.patita.firma', 'Las cuatro fundadoras de Adopta un Olvidado') ? (
+              <p style={{ font: 'var(--font-body-base)', color: 'var(--text-muted)', margin: '20px 0 0' }}>
+                — {T('home.patita.firma', 'Las cuatro fundadoras de Adopta un Olvidado')}
+              </p>
+            ) : null}
+          </div>
         </div>
       </Seccion>
 
