@@ -131,7 +131,10 @@ function Huellas() {
               animation: `adopta-huella ${VIDA_MS}ms ease-out forwards`,
             }}
           >
-            <Huella size={26} rotate={h.rot} color="var(--action-sponsor)" />
+            {/* Amarillo de marca con contorno azul marino: sobre el fondo crema
+                el amarillo solo casi no se veía (pedido de la fundadora, nov 2026). */}
+            <Huella size={30} rotate={h.rot} color="var(--amber-500)"
+                    style={{ filter: 'drop-shadow(0 0 0.6px #082B5C) drop-shadow(0 0 0.6px #082B5C) drop-shadow(0 1px 2px rgba(8, 43, 92, 0.35))' }} />
           </div>
         ))}
       </div>
@@ -144,7 +147,7 @@ if (!document.getElementById('adopta-huellas-keyframes')) {
   s.id = 'adopta-huellas-keyframes';
   s.textContent = `@keyframes adopta-huella {
     0%   { opacity: 0;    transform: translate(-50%, -50%) scale(0.6); }
-    18%  { opacity: 0.85; transform: translate(-50%, -50%) scale(1); }
+    18%  { opacity: 1;    transform: translate(-50%, -50%) scale(1); }
     100% { opacity: 0;    transform: translate(-50%, -50%) scale(1); }
   }`;
   document.head.appendChild(s);
