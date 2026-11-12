@@ -10,7 +10,7 @@
 
 function Home({ onSeeDog, onNavigate }) {
   const { Button, Modal, DogCard } = window.AdoptaUnOlvidadoDesignSystem_167478;
-  const { Seccion, Encabezado, Tarjeta, PatitaFoto, Estrella, TrazoDorado, Antecedente, useFotos } = window.UI;
+  const { Seccion, Encabezado, Tarjeta, PatitaFoto, Estrella, Antecedente, useFotos } = window.UI;
   const [donarAbierto, setDonarAbierto] = React.useState(false);
   const angosto = window.useEsAngosto(820);
 
@@ -72,7 +72,6 @@ function Home({ onSeeDog, onNavigate }) {
               <Button variant="cta" icon="paw-print" wag onClick={() => onNavigate('catalogo')}>Conoce a nuestros perros →</Button>
               <Button variant="secondary" icon="heart" onClick={() => setDonarAbierto(true)}>Dona hoy</Button>
             </div>
-            {!angosto ? <TrazoDorado ancho={180} style={{ position: 'absolute', left: 'max(0px, calc((100vw - 1200px) / 2 - 20px))', bottom: 24, opacity: 0.9 }} /> : null}
           </div>
 
           {/* Foto */}
