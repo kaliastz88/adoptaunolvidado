@@ -211,7 +211,7 @@ function Pie({ irA }) {
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '44px clamp(20px, 5vw, 48px) 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 28 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <LogoInsignia size={64} />
-          <span style={{ fontFamily: 'var(--font-script)', fontSize: '2.1rem', color: '#fff', lineHeight: 1 }}>
+          <span style={{ fontFamily: 'var(--font-script)', fontSize: '1.85rem', fontWeight: 500, color: '#fff', lineHeight: 1 }}>
             Juntos podemos más <span style={{ color: 'var(--amber-500)' }} aria-hidden="true">♡</span>
           </span>
         </div>

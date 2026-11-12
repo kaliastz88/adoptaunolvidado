@@ -1,15 +1,16 @@
 /* Adopta un Olvidado — Typography tokens
    Headlines use a classic serif (Libre Caslon Text) to echo the serif lettering
    of the logo and the editorial reference the founder shared (Nov 2026). Body
-   and UI stay in Work Sans for readability. Allura is a script accent used
-   sparingly (one phrase per screen at most), like "Juntos podemos más". */
+   and UI stay in Work Sans for readability. Caveat is a handwritten accent used
+   sparingly (one phrase per screen at most), like "Juntos podemos más".
+   (Caveat chosen by the founder over Allura, Nov 2026.) */
 
-@import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Work+Sans:wght@400;500;600;700&family=Allura&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Work+Sans:wght@400;500;600;700&family=Caveat:wght@500;600&display=swap');
 
 :root {
   /* ---- Base font families ---- */
   --font-display: 'Libre Caslon Text', Georgia, 'Times New Roman', serif; /* headlines, big numbers */
-  --font-script:  'Allura', 'Brush Script MT', cursive;                    /* one accent phrase per screen */
+  --font-script:  'Caveat', 'Bradley Hand', cursive;                    /* one accent phrase per screen */
   --font-body:    'Work Sans', 'Segoe UI', system-ui, sans-serif; /* paragraphs, UI copy */
 
   /* ---- Base type scale (px, converted to rem at 16px root) ---- */

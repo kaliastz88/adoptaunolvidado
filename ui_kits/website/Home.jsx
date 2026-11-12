@@ -94,7 +94,7 @@ function Home({ onSeeDog, onNavigate }) {
             {!angosto ? <div aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, var(--surface-page) 0%, rgba(248,242,232,0) 22%)' }} /> : null}
             {fraseManuscrita ? (
               <div style={{ position: 'absolute', right: angosto ? 18 : 48, top: angosto ? 18 : 48, textAlign: 'right' }}>
-                <span style={{ fontFamily: 'var(--font-script)', fontSize: angosto ? '2rem' : '2.8rem', lineHeight: 1, color: '#fff', textShadow: '0 2px 12px rgba(0,0,0,0.45)', display: 'block', maxWidth: 220 }}>
+                <span style={{ fontFamily: 'var(--font-script)', fontSize: angosto ? '1.9rem' : '2.5rem', fontWeight: 600, lineHeight: 1, color: '#fff', textShadow: '0 2px 12px rgba(0,0,0,0.45)', display: 'block', maxWidth: 240 }}>
                   {fraseManuscrita}
                 </span>
                 <Estrella size={18} style={{ marginLeft: 'auto', marginTop: 6 }} />
@@ -213,7 +213,7 @@ function Home({ onSeeDog, onNavigate }) {
               {T('home.patita.texto', 'Ninguno de ellos eligió la calle. Pero tú sí puedes elegir sacarlos de ahí.')}
             </p>
             {T('home.patita.firma', 'Las cuatro fundadoras de Adopta un Olvidado') ? (
-              <p style={{ fontFamily: 'var(--font-script)', fontSize: '1.9rem', color: 'var(--action-primary)', margin: '18px 0 0' }}>
+              <p style={{ fontFamily: 'var(--font-script)', fontSize: '1.65rem', fontWeight: 500, color: 'var(--action-primary)', margin: '18px 0 0' }}>
                 — {T('home.patita.firma', 'Las cuatro fundadoras de Adopta un Olvidado')}
               </p>
             ) : null}
