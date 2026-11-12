@@ -24,7 +24,8 @@ function CarruselPerritos({ onSeeDog }) {
         if (!vivo) return;
         // Se barajan para que la portada no muestre siempre a los mismos. Los
         // que llevan más tiempo esperando merecen aparecer igual que los nuevos.
-        const mezclados = todos.slice();
+        // Solo los que siguen esperando, igual que en el catálogo.
+        const mezclados = todos.filter((a) => a.status !== 'Adoptado');
         for (let k = mezclados.length - 1; k > 0; k--) {
           const j = Math.floor(Math.random() * (k + 1));
           [mezclados[k], mezclados[j]] = [mezclados[j], mezclados[k]];

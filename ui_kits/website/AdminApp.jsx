@@ -267,8 +267,8 @@ function AdminPanel({ acceso }) {
   const [nuevasSolicitudes, setNuevasSolicitudes] = React.useState(0);
 
   const PESTANAS = esOwner
-    ? ['Animales', 'Solicitudes', 'Padrinos', 'Alianzas', 'Textos', 'Usuarios']
-    : ['Animales', 'Solicitudes', 'Padrinos', 'Alianzas', 'Textos'];
+    ? ['Animales', 'Fotos', 'Solicitudes', 'Padrinos', 'Alianzas', 'Textos', 'Usuarios']
+    : ['Animales', 'Fotos', 'Solicitudes', 'Padrinos', 'Alianzas', 'Textos'];
 
   const [animals, setAnimals] = React.useState([]);
   const [cargando, setCargando] = React.useState(true);
@@ -430,7 +430,7 @@ function AdminPanel({ acceso }) {
     <div style={{ minHeight: '100vh', background: 'var(--surface-page)', fontFamily: 'var(--font-body)' }}>
       <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 48px', borderBottom: '1px solid var(--border-subtle)', background: '#fff' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <img src="../../assets/logo/adopta-un-olvidado-logo.png" alt="Adopta un Olvidado" style={{ height: 32, width: 32 }} />
+          <img src="../../assets/logo/adopta-un-olvidado-logo-dorado.png" alt="Adopta un Olvidado" style={{ height: 36, width: 36, borderRadius: "50%" }} />
           <span style={{ font: '700 18px var(--font-display)', color: 'var(--blue-600)' }}>Panel de administración</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
@@ -465,6 +465,7 @@ function AdminPanel({ acceso }) {
 
         {seccion === 'Usuarios' && esOwner ? <SeccionUsuarios yo={acceso} />
         : seccion === 'Textos' ? <SeccionTextos />
+        : seccion === 'Fotos' ? <window.SeccionFotos />
         : seccion === 'Padrinos' ? <SeccionPadrinos />
         : seccion === 'Alianzas' ? <SeccionAlianzas />
         : seccion === 'Solicitudes' ? <SeccionSolicitudes onContarNuevas={setNuevasSolicitudes} /> : (

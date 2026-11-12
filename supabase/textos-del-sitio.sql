@@ -69,6 +69,7 @@ insert into public.site_texts (clave, valor, seccion, etiqueta, ayuda, multiline
   ('home.eyebrow', 'Rescate · rehabilitación · adopción responsable', 'Portada', 'Línea pequeña de arriba', 'Aparece en mayúsculas sobre el título principal.', false, 10),
   ('home.titulo', 'Un gesto tuyo puede ser el comienzo de su historia feliz.', 'Portada', 'Título principal', 'Lo primero que se lee al entrar al sitio.', true, 20),
   ('home.subtitulo', 'Rescatamos, rehabilitamos y encontramos el hogar correcto para cada perrito olvidado.', 'Portada', 'Frase de presentación', '', true, 30),
+  ('home.frase', 'Ellos también sienten', 'Portada', 'Frase manuscrita sobre la foto', 'Va en letra manuscrita sobre la foto grande. Déjala vacía para quitarla.', false, 35),
   ('home.stat1.valor', '+60', 'Portada', 'Cifra 1', 'Ej. +60', false, 40),
   ('home.stat1.etiqueta', 'perritos con hogar', 'Portada', 'Texto de la cifra 1', '', false, 50),
   ('home.stat2.valor', '4', 'Portada', 'Cifra 2', '', false, 60),
@@ -76,7 +77,7 @@ insert into public.site_texts (clave, valor, seccion, etiqueta, ayuda, multiline
   ('home.stat3.valor', '100%', 'Portada', 'Cifra 3', '', false, 80),
   ('home.stat3.etiqueta', 'adopción responsable', 'Portada', 'Texto de la cifra 3', '', false, 90),
   ('home.aliados.titulo', 'Las grandes historias comienzan con una alianza.', 'Portada', 'Título de la sección de aliados', '', true, 100),
-  ('home.aliados.texto', 'En Adopta un Olvidado creemos que cambiar la vida de un perrito no es una tarea que podamos hacer solos. Hoy reconocemos a Hotel PupuClub, que abrió sus puertas como hogar temporal y espacio de rehabilitación para nuestros rescatados.', 'Portada', 'Texto de la sección de aliados', 'Aquí se menciona a las marcas aliadas.', true, 110),
+  ('home.aliados.texto', 'En Adopta un Olvidado creemos que cambiar la vida de un perrito no es una tarea que podamos hacer solos. Hoy reconocemos a Hotel ThePupClub.mx, que abrió sus puertas como hogar temporal y espacio de rehabilitación para nuestros rescatados.', 'Portada', 'Texto de la sección de aliados', 'Aquí se menciona a las marcas aliadas.', true, 110),
 
   ('home.patita.texto', 'Ninguno de ellos eligió la calle. Pero tú sí puedes elegir sacarlos de ahí.', 'Portada', 'Mensaje del recuadro de patita', 'La frase grande dentro de la patita amarilla.', true, 115),
   ('home.patita.firma', 'Las cuatro fundadoras de Adopta un Olvidado', 'Portada', 'Firma del recuadro de patita', 'Déjalo vacío si no quieres que aparezca.', false, 116),
@@ -91,9 +92,9 @@ insert into public.site_texts (clave, valor, seccion, etiqueta, ayuda, multiline
   ('donar.intro', 'Cada aporte se convierte en atención médica, alimento y un lugar seguro donde sanar. Así es como tu ayuda se transforma en una historia feliz.', 'Donar', 'Frase de presentación', '', true, 20),
 
   ('historias.titulo', 'Cada adopción cambia dos vidas.', 'Historias', 'Título', '', true, 10),
-  ('historias.intro', 'Estas son algunas de las transformaciones que hemos acompañado. Rescatar es solo el comienzo.', 'Historias', 'Frase de presentación', '', true, 20),
+  ('historias.intro', 'Historias que comenzaron con abandono y encontraron un hogar, una familia y una nueva oportunidad. Porque rescatar es solo el comienzo. Gracias a los que confían en nosotras.', 'Historias', 'Frase de presentación', '', true, 20),
 
-  ('contacto.intro', 'La forma más rápida de encontrarnos es por Instagram, ahí contestamos todos los días.', 'Contacto', 'Frase de presentación', '', true, 10),
+  ('contacto.intro', 'Síguenos en nuestras redes y sé parte de esta comunidad que trabaja para cambiar sus vidas.', 'Contacto', 'Frase de presentación', '', true, 10),
   ('contacto.correo', '', 'Contacto', 'Correo de contacto', 'Déjalo vacío si no quieres publicarlo. Vacío significa que no aparece en el sitio.', false, 20),
   ('contacto.telefono', '', 'Contacto', 'Teléfono o WhatsApp', 'Déjalo vacío si no quieres publicarlo.', false, 30),
   ('contacto.ciudad', 'Ciudad de México', 'Contacto', 'Ciudad', '', false, 40)

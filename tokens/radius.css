@@ -10,8 +10,10 @@
   --radius-xl:   32px;
   --radius-pill: 999px;
 
-  --radius-button: var(--radius-pill);
-  --radius-card:   var(--radius-lg);
+  /* Editorial direction (Nov 2026): crisper corners than before, closer to
+     the founder's reference — still soft, no longer bubbly. */
+  --radius-button: 6px;
+  --radius-card:   14px;
   --radius-input:  var(--radius-sm);
   --radius-modal:  var(--radius-xl);
   --radius-tag:    var(--radius-pill);

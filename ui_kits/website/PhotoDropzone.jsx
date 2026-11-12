@@ -184,7 +184,7 @@ function PhotoDropzone({ value, onChange, onUploadedPath, campos = CAMPOS_FOTO, 
     const r = marco.getBoundingClientRect();
     const nx = Math.min(100, Math.max(0, ((e.clientX - r.left) / r.width) * 100));
     const ny = Math.min(100, Math.max(0, ((e.clientY - r.top) / r.height) * 100));
-    onChange({ photo_pos: `${Math.round(nx)}% ${Math.round(ny)}%` });
+    onChange({ [campos.pos]: `${Math.round(nx)}% ${Math.round(ny)}%` });
   }
 
   function iniciarArrastre(e) {

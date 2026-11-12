@@ -14,7 +14,10 @@ function Catalogo({ onSeeDog }) {
   React.useEffect(() => {
     let vivo = true;
     window.db.listAnimals()
-      .then((filas) => { if (vivo) setAnimales(filas); })
+      // Los adoptados no aparecen aquí: el catálogo es para los que siguen
+      // esperando, y una tarjeta de «Adoptado» les quita foco. Viven en la
+      // página de Finales felices.
+      .then((filas) => { if (vivo) setAnimales(filas.filter((a) => a.status !== 'Adoptado')); })
       .catch((e) => { if (vivo) setError(e.message); })
       .finally(() => { if (vivo) setCargando(false); });
     return () => { vivo = false; };
@@ -62,7 +65,7 @@ function Catalogo({ onSeeDog }) {
             : 'Ningún animal coincide con esos filtros.'}
         </p>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: 24 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 160px), 1fr))', gap: 20 }}>
           {filtrados.map((d) => (
             <DogCard
               key={d.id}
@@ -71,7 +74,7 @@ function Catalogo({ onSeeDog }) {
               size={d.size}
               photo={d.photo}
               photoPos={d.photo_pos}
-              tone={d.status === 'Adoptado' ? 'adopted' : 'available'}
+              tone="available"
               onClick={() => onSeeDog(d)}
             />
           ))}

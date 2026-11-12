@@ -35,6 +35,7 @@
       cambiarEstadoApadrinamiento: falla, borrarApadrinamiento: falla,
       crearSolicitudAlianza: falla, listAlianzas: falla,
       cambiarEstadoAlianza: falla, borrarAlianza: falla,
+      listFotos: falla, guardarFoto: falla, borrarFoto: falla,
       onAuthChange: function () { return function () {}; },
     };
   }
@@ -425,6 +426,49 @@
           if (!filas || filas.length === 0) {
             throw new Error('No se pudo eliminar. Vuelve a iniciar sesión.');
           }
+        });
+    },
+
+    // --- Fotos del sitio (álbumes) ------------------------------------------
+
+    // Fundadoras, finales felices, voluntarios, aliados, merch... Todo lo que no
+    // es la ficha de un perro. Sin álbum devuelve todas, que es lo que usa el
+    // panel para contar cuántas hay en cada uno.
+    listFotos: function (album) {
+      var q = sb.from('site_photos').select('*');
+      if (album) q = q.eq('album', album);
+      return q
+        .order('orden', { ascending: true })
+        .order('created_at', { ascending: true })
+        .then(desempacar);
+    },
+
+    // Inserta o actualiza, igual que saveAnimal. Solo se mandan las columnas
+    // que existen para que Postgres no rechace campos del formulario.
+    guardarFoto: function (form) {
+      var fila = {};
+      ['album', 'titulo', 'descripcion', 'enlace', 'photo', 'photo_path', 'photo_pos', 'orden']
+        .forEach(function (c) { if (form[c] !== undefined) fila[c] = form[c] == null ? '' : form[c]; });
+      var q = form.id
+        ? sb.from('site_photos').update(fila).eq('id', form.id).select().single()
+        : sb.from('site_photos').insert(fila).select().single();
+      return q.then(desempacar);
+    },
+
+    // Fila primero, archivo después: el mismo orden y la misma razón que en
+    // deleteAnimal.
+    borrarFoto: function (foto) {
+      return sb
+        .from('site_photos')
+        .delete()
+        .eq('id', foto.id)
+        .select()
+        .then(desempacar)
+        .then(function (borradas) {
+          if (!borradas || borradas.length === 0) {
+            throw new Error('No se pudo eliminar la foto. Vuelve a iniciar sesión.');
+          }
+          if (foto.photo_path) return window.db.deletePhoto(foto.photo_path);
         });
     },
 

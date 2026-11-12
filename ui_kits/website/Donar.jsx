@@ -3,7 +3,7 @@ function Donar() {
   const IMPACT = [
     { icon: 'stethoscope', title: 'Atención veterinaria', body: 'Consultas, curaciones, vacunas y desparasitación para cada rescatado.' },
     { icon: 'bone', title: 'Alimentación diaria', body: 'Comida adecuada durante todo su proceso de recuperación.' },
-    { icon: 'house-heart', title: 'Hogar temporal', body: 'Un espacio seguro donde rehabilitarse mientras encuentra familia.' },
+    { icon: 'home', title: 'Hogar temporal', body: 'Un espacio seguro donde rehabilitarse mientras encuentra familia.' },
   ];
   return (
     <Seccion tono="terracota" ancho={1000}>

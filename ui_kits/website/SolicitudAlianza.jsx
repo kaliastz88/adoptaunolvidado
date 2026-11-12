@@ -113,7 +113,7 @@ function SolicitudAlianza({ onBack }) {
       <section style={estiloTarjeta}>
         <h2 style={estiloTitulo}>Tu marca</h2>
         <div style={estiloColumna}>
-          <Input label="Nombre de la marca o empresa *" placeholder="Ej. Hotel PupuClub"
+          <Input label="Nombre de la marca o empresa *" placeholder="Ej. Hotel ThePupClub.mx"
                  value={form.marca} onChange={(e) => set('marca', e.target.value)} />
           <Input label="¿A qué se dedica?" placeholder="Ej. hotel y guardería para perros"
                  value={form.giro} onChange={(e) => set('giro', e.target.value)} />

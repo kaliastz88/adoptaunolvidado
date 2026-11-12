@@ -18,3 +18,25 @@ body {
 
 a { color: var(--text-link); text-decoration: none; }
 a:hover { color: var(--text-link-hover); text-decoration: underline; }
+
+/* Serif headings set tight tracking per element; serifs need it looser. */
+h1, h2, h3 { letter-spacing: -0.005em !important; }
+h1, h2, h3, h4 { text-wrap: balance; }
+p { text-wrap: pretty; }
+
+/* Keyboard focus that is visible on cream, white and navy alike. */
+a:focus-visible, button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline: 3px solid var(--amber-500);
+  outline-offset: 2px;
+}
+
+/* "Colita": the wag on donate/adopt buttons, like a happy tail. */
+@keyframes colita {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-16deg); }
+  45% { transform: rotate(12deg); }
+  70% { transform: rotate(-8deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; }
+}

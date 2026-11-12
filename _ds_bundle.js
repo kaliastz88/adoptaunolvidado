@@ -70,18 +70,18 @@ const VARIANT_STYLES = {
   },
   cta: {
     background: 'var(--action-cta)',
-    color: 'var(--text-on-brand)',
+    color: 'var(--text-on-accent)',
     border: '1px solid transparent'
   },
   sponsor: {
     background: 'var(--action-sponsor)',
-    color: 'var(--text-on-brand)',
+    color: 'var(--text-on-accent)',
     border: '1px solid transparent'
   },
   secondary: {
     background: 'transparent',
     color: 'var(--action-primary)',
-    border: '1.5px solid var(--border-brand)'
+    border: '1.5px solid var(--action-primary)'
   },
   ghost: {
     background: 'transparent',
@@ -91,16 +91,16 @@ const VARIANT_STYLES = {
 };
 const SIZE_STYLES = {
   sm: {
-    padding: '8px 16px',
-    fontSize: 'var(--text-sm)'
+    padding: '9px 16px',
+    fontSize: '0.75rem'
   },
   md: {
-    padding: '12px 22px',
-    fontSize: 'var(--text-base)'
+    padding: '13px 24px',
+    fontSize: '0.8125rem'
   },
   lg: {
     padding: '16px 30px',
-    fontSize: 'var(--text-md)'
+    fontSize: '0.875rem'
   }
 };
 function Button({
@@ -142,7 +142,10 @@ function Button({
       justifyContent: 'center',
       gap: '8px',
       fontFamily: 'var(--font-body)',
-      fontWeight: 600,
+      fontWeight: 700,
+      textTransform: 'uppercase',
+      letterSpacing: '0.07em',
+      lineHeight: 1.2,
       borderRadius: 'var(--radius-button)',
       cursor: disabled ? 'not-allowed' : 'pointer',
       opacity: disabled ? 0.5 : 1,
@@ -156,10 +159,11 @@ function Button({
   }, rest), icon ? /*#__PURE__*/React.createElement("i", {
     "data-lucide": icon,
     style: {
-      width: 18,
-      height: 18,
-      transition: 'var(--transition-wag)',
-      transform: wag && hover ? 'rotate(-10deg)' : 'rotate(0deg)'
+      width: 16,
+      height: 16,
+      flexShrink: 0,
+      transformOrigin: '50% 85%',
+      animation: wag && hover ? 'colita 0.7s ease-in-out 2' : 'none'
     }
   }) : null, children);
 }
@@ -222,6 +226,9 @@ function DogCard({
     onClick: onClick,
     onMouseEnter: () => setHover(true),
     onMouseLeave: () => setHover(false),
+    role: onClick ? 'button' : undefined,
+    tabIndex: onClick ? 0 : undefined,
+    onKeyDown: onClick ? e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } } : undefined,
     style: {
       borderRadius: 'var(--radius-card)',
       overflow: 'hidden',
@@ -231,56 +238,46 @@ function DogCard({
       transition: 'var(--transition-hover)',
       cursor: onClick ? 'pointer' : 'default',
       fontFamily: 'var(--font-body)',
-      width: 260
+      width: '100%',
+      maxWidth: 320
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
-      height: 200,
-      background: photo ? `${photoPos}/cover no-repeat url(${photo})` : 'var(--blue-100)',
+      aspectRatio: '4 / 3.4',
+      background: photo ? `${photoPos}/cover no-repeat url(${photo})` : 'linear-gradient(150deg, var(--blue-100), var(--amber-50))',
       display: photo ? 'block' : 'flex',
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      position: 'relative'
     }
   }, !photo ? /*#__PURE__*/React.createElement("i", {
     "data-lucide": "dog",
+    style: { width: 40, height: 40, color: 'var(--blue-400)' }
+  }) : null, tone === 'adopted' ? /*#__PURE__*/React.createElement("span", {
     style: {
-      width: 40,
-      height: 40,
-      color: 'var(--blue-400)'
+      position: 'absolute', top: 10, left: 10,
+      fontSize: 'var(--text-2xs)', fontWeight: 700, color: 'var(--sage-600)',
+      background: 'var(--status-success-bg)', padding: '3px 10px', borderRadius: 'var(--radius-pill)'
     }
-  }) : null), /*#__PURE__*/React.createElement("div", {
-    style: {
-      padding: 'var(--space-card-pad)',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: 8
-    }
-  }, /*#__PURE__*/React.createElement("div", {
-    style: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between'
-    }
+  }, "Adoptado") : null), /*#__PURE__*/React.createElement("div", {
+    style: { padding: '16px 18px 18px', display: 'flex', flexDirection: 'column', gap: 4 }
   }, /*#__PURE__*/React.createElement("span", {
     style: {
-      font: 'var(--font-h4)',
-      color: 'var(--text-primary)'
+      fontFamily: 'var(--font-display)', fontSize: 'var(--text-md)', fontWeight: 400,
+      textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--text-primary)'
     }
-  }, name), tone === 'adopted' ? /*#__PURE__*/React.createElement("span", {
+  }, name), /*#__PURE__*/React.createElement("span", {
+    style: { font: 'var(--font-caption)', color: 'var(--text-secondary)' }
+  }, [age, size].filter(Boolean).join(' \xB7 ')), onClick ? /*#__PURE__*/React.createElement("span", {
     style: {
-      fontSize: 'var(--text-2xs)',
-      fontWeight: 700,
-      color: 'var(--sage-600)',
-      background: 'var(--status-success-bg)',
-      padding: '3px 10px',
-      borderRadius: 'var(--radius-pill)'
+      marginTop: 10, fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase',
+      color: 'var(--action-primary)', display: 'inline-flex', alignItems: 'center', gap: 6,
+      borderBottom: '1.5px solid var(--amber-500)', alignSelf: 'flex-start', paddingBottom: 2
     }
-  }, "Adoptado") : null), /*#__PURE__*/React.createElement("span", {
-    style: {
-      font: 'var(--font-body-sm)',
-      color: 'var(--text-secondary)'
-    }
-  }, age, " \xB7 ", size)));
+  }, "Con\xF3celo ", /*#__PURE__*/React.createElement("span", {
+    "aria-hidden": "true",
+    style: { transition: 'transform 220ms', transform: hover ? 'translateX(3px)' : 'none' }
+  }, "\u2192")) : null));
 }
 Object.assign(__ds_scope, { DogCard });
 })(); } catch (e) { __ds_ns.__errors.push({ path: "components/data/DogCard.jsx", error: String((e && e.message) || e) }); }

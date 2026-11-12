@@ -52,7 +52,7 @@ function Seccion({ tono = 'crema', curva = false, curvaAbajo = false, ancho = 11
       position: 'relative',
       background: t.fondo,
       color: t.texto,
-      padding: `${py}px 48px`,
+      padding: `${py}px clamp(20px, 5vw, 48px)`,
       // El margen compensa la curva para que no deje un hueco de color raro.
       marginTop: curva ? 64 : 0,
       ...style,
@@ -116,8 +116,8 @@ function Cifra({ valor, etiqueta, tono = 'crema' }) {
   return (
     <div style={{ textAlign: 'center', minWidth: 150 }}>
       <div style={{
-        font: 'var(--font-display)', fontSize: 'clamp(44px, 7vw, 76px)', fontWeight: 700,
-        lineHeight: 1, color: t.acento, letterSpacing: '-0.03em',
+        fontFamily: 'var(--font-display)', fontSize: 'clamp(44px, 7vw, 76px)', fontWeight: 400,
+        lineHeight: 1, color: t.acento,
       }}>{valor}</div>
       <div style={{ font: 'var(--font-body-sm)', color: t.suave, marginTop: 10, textTransform: 'uppercase', letterSpacing: 'var(--tracking-wider)' }}>
         {etiqueta}
@@ -131,7 +131,7 @@ function Cifra({ valor, etiqueta, tono = 'crema' }) {
 // los lados de las pantallas anchas. Repetida, la línea siempre llega completa.
 function FranjaHuellas({ tono = 'azul', alto = 54, tamano = 30 }) {
   const t = TONOS[tono] || TONOS.azul;
-  const color = tono === 'azul' || tono === 'noche' ? '#FEBC1A' : '#021C4B';
+  const color = tono === 'azul' || tono === 'noche' ? '#FFC328' : '#082B5C';
   const patita = encodeURIComponent(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${tamano}" height="${tamano}" viewBox="0 0 110 110">`
     + `<g fill="${color}" opacity="0.3">`
@@ -258,4 +258,72 @@ function Tarjeta({ children, onClick, style }) {
   );
 }
 
-window.UI = { TONOS, Seccion, Curva, Encabezado, FotoArco, Cifra, FranjaHuellas, PatitaFoto, Tarjeta };
+// Fotos de un álbum del panel (fundadoras, voluntarios, merch...). Devuelve
+// null mientras carga y [] si no hay ninguna o la tabla todavía no existe: cada
+// página decide qué mostrar por defecto, nunca se rompe por falta de fotos.
+function useFotos(album) {
+  const [fotos, setFotos] = React.useState(null);
+  React.useEffect(() => {
+    let vivo = true;
+    if (!window.db || !window.db.listFotos) { setFotos([]); return undefined; }
+    window.db.listFotos(album)
+      .then((f) => { if (vivo) setFotos(f || []); })
+      .catch(() => { if (vivo) setFotos([]); });
+    return () => { vivo = false; };
+  }, [album]);
+  return fotos;
+}
+
+// Retícula de fotos con pie opcional. La usan Nuestra historia y Voluntario.
+function Galeria({ fotos, alto = 240, min = 220 }) {
+  if (!fotos || fotos.length === 0) return null;
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: `repeat(auto-fill, minmax(${min}px, 1fr))`, gap: 16 }}>
+      {fotos.map((f) => (
+        <figure key={f.id} style={{ margin: 0 }}>
+          <div style={{
+            height: alto, borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)',
+            background: `${f.photo_pos || 'center'}/cover no-repeat url(${f.photo})`,
+          }} role="img" aria-label={f.titulo || 'Foto de Adopta un Olvidado'} />
+          {f.titulo ? (
+            <figcaption style={{ font: 'var(--font-body-sm)', color: 'var(--text-secondary)', marginTop: 8, textAlign: 'center' }}>{f.titulo}</figcaption>
+          ) : null}
+        </figure>
+      ))}
+    </div>
+  );
+}
+
+// Estrella de cuatro puntas, la misma de las estrellas del logo. Es el gesto
+// que amarra el sitio al logo: unas pocas, doradas, nunca un patrón de fondo.
+function Estrella({ size = 22, color = 'var(--amber-500)', style }) {
+  return (
+    <svg aria-hidden="true" width={size} height={size} viewBox="0 0 24 24" style={{ display: 'block', ...style }}>
+      <path fill={color} d="M12 0 C12.6 7.2 13.4 10.6 24 12 C13.4 13.4 12.6 16.8 12 24 C11.4 16.8 10.6 13.4 0 12 C10.6 10.6 11.4 7.2 12 0 Z" />
+      <path fill={color} opacity="0.75" d="M12 6 L13 11 L18 12 L13 13 L12 18 L11 13 L6 12 L11 11 Z" transform="rotate(45 12 12)" />
+    </svg>
+  );
+}
+
+// Trazo dorado delgado, como los arcos del logo alrededor del perrito.
+function TrazoDorado({ ancho = 160, style }) {
+  return (
+    <svg aria-hidden="true" width={ancho} height={ancho * 0.45} viewBox="0 0 160 72" fill="none" style={{ display: 'block', ...style }}>
+      <path d="M2 70 C30 30 90 6 158 4" stroke="var(--amber-500)" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+// Antecedente con estrella, como en la referencia: «★ ELLOS TODAVÍA ESPERAN».
+function Antecedente({ children, color = 'var(--action-primary)', centrado = false, style }) {
+  return (
+    <span style={{
+      display: 'inline-flex', alignItems: 'center', gap: 8, justifyContent: centrado ? 'center' : 'flex-start',
+      font: 'var(--font-eyebrow)', color, textTransform: 'uppercase', letterSpacing: '0.12em', ...style,
+    }}>
+      <Estrella size={14} /> {children}
+    </span>
+  );
+}
+
+window.UI = { TONOS, Seccion, Curva, Encabezado, FotoArco, Cifra, FranjaHuellas, PatitaFoto, Tarjeta, useFotos, Galeria, Estrella, TrazoDorado, Antecedente };

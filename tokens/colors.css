@@ -1,13 +1,14 @@
 /* Adopta un Olvidado — Color tokens
-   Anchored to the real logo (navy circle + gold dog/stars, magenta→orange→gold
-   ring). Navy is primary/trust; gold is the sponsor/highlight accent lifted
-   straight from the dog mark. Paired with a warm terracotta CTA accent and a
-   hopeful sage green for success/adopted states. Tints/shades are generated
-   from the exact brand hex via color-mix so every step stays true to the logo. */
+   Brand colors confirmed by the founder (Nov 2026): yellow #FFC328 and navy
+   #082B5C, chosen so the logo sits inside the design instead of looking like
+   a sticker. Navy is primary/trust; yellow is the call-to-action color (always
+   with navy text — white on yellow is unreadable). Pages sit on a warm cream,
+   like an editorial print piece. Terracotta survives only for errors; sage for
+   success. Tints/shades are generated from the brand hex via color-mix. */
 
 :root {
   /* ---- Base: Navy blue (trust, primary brand — exact logo navy) ---- */
-  --blue-600: #021C4B; /* exact logo navy */
+  --blue-600: #082B5C; /* brand navy (founder, Nov 2026) */
   --blue-50:  color-mix(in oklch, var(--blue-600) 6%,  white);
   --blue-100: color-mix(in oklch, var(--blue-600) 14%, white);
   --blue-200: color-mix(in oklch, var(--blue-600) 26%, white);
@@ -44,7 +45,7 @@
   --sage-600: oklch(46% 0.088 155);
 
   /* ---- Base: Gold (sponsor / apadrina highlight — exact logo dog/stars gold) ---- */
-  --amber-500: #FEBC1A; /* exact logo gold */
+  --amber-500: #FFC328; /* brand yellow (founder, Nov 2026) */
   --amber-50:  color-mix(in oklch, var(--amber-500) 10%, white);
   --amber-200: color-mix(in oklch, var(--amber-500) 35%, white);
   --amber-400: color-mix(in oklch, var(--amber-500) 78%, white);
@@ -65,8 +66,8 @@
   --neutral-900: oklch(17% 0.009 35);
 
   /* ---- Semantic: surfaces ---- */
-  --surface-page:      var(--neutral-0);
-  --surface-alt:       var(--neutral-25);
+  --surface-page:      #F8F2E8; /* cream */
+  --surface-alt:       #F1E7D7; /* sand */
   --surface-card:      #ffffff;
   --surface-sunken:    var(--neutral-50);
   --surface-inverse:   var(--blue-900);
@@ -74,9 +75,10 @@
   --surface-brand-soft:var(--blue-50);
 
   /* ---- Semantic: text ---- */
-  --text-primary:   var(--neutral-800);
-  --text-secondary: var(--neutral-500);
-  --text-muted:     var(--neutral-400);
+  --text-primary:   color-mix(in oklch, var(--blue-600) 78%, black); /* deep navy ink */
+  --text-secondary: color-mix(in oklch, var(--blue-600) 35%, var(--neutral-600));
+  --text-muted:     var(--neutral-500);
+  --text-on-accent: var(--blue-600); /* text on yellow buttons/badges */
   --text-on-brand:  #ffffff;
   --text-on-dark:   var(--blue-50);
   --text-link:      var(--blue-600);
@@ -93,18 +95,22 @@
   --action-primary:        var(--blue-600);
   --action-primary-hover:  var(--blue-700);
   --action-primary-active: var(--blue-800);
-  --action-cta:            var(--terracotta-500);
-  --action-cta-hover:      var(--terracotta-600);
-  --action-cta-active:     var(--terracotta-700);
+  --action-cta:            var(--amber-500);
+  --action-cta-hover:      var(--amber-400);
+  --action-cta-active:     var(--amber-600);
   --action-sponsor:        var(--amber-500);
-  --action-sponsor-hover:  var(--amber-600);
+  --action-sponsor-hover:  var(--amber-400);
+  /* Gold is too light to read as text on cream; this darker step is for eyebrows/labels. */
+  --action-sponsor-text:   color-mix(in oklch, var(--amber-500) 55%, black);
 
   /* ---- Semantic: status ---- */
   --status-success:      var(--sage-500);
   --status-success-bg:   var(--sage-50);
   --status-info:         var(--blue-500);
   --status-info-bg:      var(--blue-50);
-  --status-warning:      var(--amber-500);
+  --status-warning:      var(--amber-600);
+  --status-error:        var(--terracotta-600);
+  --status-error-bg:     var(--terracotta-50);
   --status-warning-bg:   var(--amber-50);
 
   /* ---- Semantic: focus ring ---- */
