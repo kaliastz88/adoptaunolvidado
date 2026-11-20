@@ -267,8 +267,8 @@ function AdminPanel({ acceso }) {
   const [nuevasSolicitudes, setNuevasSolicitudes] = React.useState(0);
 
   const PESTANAS = esOwner
-    ? ['Animales', 'Fotos', 'Solicitudes', 'Padrinos', 'Alianzas', 'Textos', 'Usuarios']
-    : ['Animales', 'Fotos', 'Solicitudes', 'Padrinos', 'Alianzas', 'Textos'];
+    ? ['Animales', 'Fotos', 'Solicitudes', 'Alertas', 'Padrinos', 'Alianzas', 'Textos', 'Usuarios']
+    : ['Animales', 'Fotos', 'Solicitudes', 'Alertas', 'Padrinos', 'Alianzas', 'Textos'];
 
   const [animals, setAnimals] = React.useState([]);
   const [cargando, setCargando] = React.useState(true);
@@ -466,6 +466,7 @@ function AdminPanel({ acceso }) {
         {seccion === 'Usuarios' && esOwner ? <SeccionUsuarios yo={acceso} />
         : seccion === 'Textos' ? <SeccionTextos />
         : seccion === 'Fotos' ? <window.SeccionFotos />
+        : seccion === 'Alertas' ? <window.SeccionAlertas />
         : seccion === 'Padrinos' ? <SeccionPadrinos />
         : seccion === 'Alianzas' ? <SeccionAlianzas />
         : seccion === 'Solicitudes' ? <SeccionSolicitudes onContarNuevas={setNuevasSolicitudes} /> : (
@@ -630,6 +631,10 @@ function SeccionSolicitudes({ onContarNuevas }) {
   const [abierta, setAbierta] = React.useState(null);
   const [filtro, setFiltro] = React.useState('Todas');
   const [ocupada, setOcupada] = React.useState('');
+  // Lista interna de alertas: si el correo o teléfono de una solicitud coincide
+  // con alguien registrado ahí, la solicitud se marca en rojo.
+  const { alertas, recargar: recargarAlertas } = window.useAlertas();
+  const [alertaForm, setAlertaForm] = React.useState(null);
 
   React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
 
@@ -699,8 +704,9 @@ function SeccionSolicitudes({ onContarNuevas }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {visibles.map((s) => {
             const expandida = abierta === s.id;
+            const alerta = window.buscarAlerta(alertas, s);
             return (
-              <article key={s.id} style={{ background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', overflow: 'hidden' }}>
+              <article key={s.id} style={{ background: '#fff', borderRadius: 'var(--radius-card)', boxShadow: 'var(--shadow-card)', overflow: 'hidden', borderLeft: alerta ? '4px solid var(--status-error)' : 'none' }}>
                 <div
                   onClick={() => setAbierta(expandida ? null : s.id)}
                   style={{ padding: '20px 24px', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}
@@ -709,6 +715,11 @@ function SeccionSolicitudes({ onContarNuevas }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                       <span style={{ font: 'var(--font-h4)', color: 'var(--text-primary)' }}>{s.nombre}</span>
                       <Badge tone={tono(s.estado)}>{s.estado}</Badge>
+                      {alerta ? (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--status-error-bg)', color: 'var(--status-error)', font: 'var(--font-caption)', fontWeight: 700, padding: '3px 10px', borderRadius: 'var(--radius-pill)' }}>
+                          <i data-lucide="triangle-alert" style={{ width: 14, height: 14 }} /> En lista de alertas
+                        </span>
+                      ) : null}
                     </div>
                     <div style={{ font: 'var(--font-body-sm)', color: 'var(--text-secondary)', marginTop: 4 }}>
                       Quiere adoptar a <b>{s.animal_nombre || 'un animal'}</b> · {new Date(s.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -724,6 +735,14 @@ function SeccionSolicitudes({ onContarNuevas }) {
 
                 {expandida ? (
                   <div style={{ borderTop: '1px solid var(--border-subtle)', padding: '24px', background: 'var(--surface-alt)' }}>
+                    {alerta ? (
+                      <div style={{ background: 'var(--status-error-bg)', border: '1px solid var(--status-error)', borderRadius: 'var(--radius-sm)', padding: '14px 18px', marginBottom: 20 }}>
+                        <div style={{ font: 'var(--font-body-sm)', fontWeight: 700, color: 'var(--status-error)', marginBottom: 6 }}>
+                          Coincide con {alerta.nombre} en la lista de alertas
+                        </div>
+                        <div style={{ font: 'var(--font-body-sm)', color: 'var(--text-primary)', whiteSpace: 'pre-wrap' }}>{alerta.motivo}</div>
+                      </div>
+                    ) : null}
                     <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 24 }}>
                       <a href={`mailto:${s.correo}`} style={{ textDecoration: 'none' }}>
                         <Button size="sm" variant="secondary" icon="mail">Escribirle</Button>
@@ -737,6 +756,12 @@ function SeccionSolicitudes({ onContarNuevas }) {
                           Marcar como {e}
                         </Button>
                       ))}
+                      {!alerta ? (
+                        <Button size="sm" variant="ghost" icon="triangle-alert"
+                                onClick={() => setAlertaForm(window.alertaVacia({ nombre: s.nombre, correo: s.correo, telefono: s.telefono, solicitud_id: s.id }))}>
+                          Agregar a alertas
+                        </Button>
+                      ) : null}
                     </div>
 
                     {PREGUNTAS.map(([grupo, campos]) => (
@@ -761,6 +786,10 @@ function SeccionSolicitudes({ onContarNuevas }) {
           })}
         </div>
       )}
+
+      <window.AlertaFormModal form={alertaForm} setForm={setAlertaForm}
+        onClose={() => setAlertaForm(null)}
+        onGuardado={() => { setAlertaForm(null); recargarAlertas(); }} />
     </div>
   );
 }

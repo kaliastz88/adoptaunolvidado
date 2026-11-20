@@ -235,6 +235,9 @@ function Pie({ irA }) {
           <span style={{ font: 'var(--font-caption)', color: 'rgba(255,255,255,0.6)', display: 'inline-flex', alignItems: 'center', gap: 8 }}>
             <Estrella size={12} /> Adopta un Olvidado · Ciudad de México
           </span>
+          <button onClick={() => irA('privacidad')} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', font: 'var(--font-caption)', fontFamily: 'var(--font-body)', color: 'rgba(255,255,255,0.75)', textDecoration: 'underline' }}>
+            Aviso de privacidad
+          </button>
           <a href="admin.html" style={{ font: 'var(--font-caption)', color: 'rgba(255,255,255,0.45)' }}>Panel</a>
         </div>
       </div>
@@ -294,6 +297,7 @@ function App() {
         {route === 'alianza' && <S.SolicitudAlianza onBack={() => irA('aliados')} />}
         {route === 'contacto' && <S.Contacto />}
         {route === 'tienda' && <S.Tienda />}
+        {route === 'privacidad' && <S.Privacidad />}
       </main>
 
       <Pie irA={irA} />

@@ -31,6 +31,7 @@ function SolicitudAlianza({ onBack }) {
   const [formas, setFormas] = React.useState([]);
   const [error, setError] = React.useState('');
   const [enviando, setEnviando] = React.useState(false);
+  const [aceptoPrivacidad, setAceptoPrivacidad] = React.useState(false);
   const [enviada, setEnviada] = React.useState(false);
 
   React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
@@ -48,6 +49,7 @@ function SolicitudAlianza({ onBack }) {
       return fallar('Ese correo no parece válido. Es por donde te vamos a contestar.');
     }
     if (formas.length === 0) { return fallar('Marca al menos una forma en la que te gustaría participar.'); }
+    if (!aceptoPrivacidad) { return fallar('Para enviar tu propuesta necesitamos que aceptes el aviso de privacidad (la casilla de abajo).'); }
 
     setEnviando(true);
     setError('');
@@ -166,6 +168,7 @@ function SolicitudAlianza({ onBack }) {
         />
       </section>
 
+      <window.AceptoPrivacidad checked={aceptoPrivacidad} onChange={setAceptoPrivacidad} />
       <div style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap', marginBottom: 40 }}>
         <Button variant="sponsor" icon="hand-heart" wag onClick={enviar} disabled={enviando}>
           {enviando ? 'Enviando...' : 'Enviar propuesta'}

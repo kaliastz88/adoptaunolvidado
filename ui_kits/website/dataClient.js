@@ -36,6 +36,7 @@
       crearSolicitudAlianza: falla, listAlianzas: falla,
       cambiarEstadoAlianza: falla, borrarAlianza: falla,
       listFotos: falla, guardarFoto: falla, borrarFoto: falla,
+      listAlertas: falla, guardarAlerta: falla, borrarAlerta: falla,
       onAuthChange: function () { return function () {}; },
     };
   }
@@ -469,6 +470,41 @@
             throw new Error('No se pudo eliminar la foto. Vuelve a iniciar sesión.');
           }
           if (foto.photo_path) return window.db.deletePhoto(foto.photo_path);
+        });
+    },
+
+    // --- Alertas de adoptantes (solo equipo) --------------------------------
+
+    // Registro interno de personas con las que una adopción no resultó bien.
+    // Solo lo lee y escribe el equipo aprobado; el público no tiene ningún
+    // permiso sobre esta tabla.
+    listAlertas: function () {
+      return sb
+        .from('adopter_alerts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .then(desempacar);
+    },
+
+    guardarAlerta: function (form) {
+      var fila = {};
+      ['nombre', 'correo', 'telefono', 'motivo', 'solicitud_id']
+        .forEach(function (c) { if (form[c] !== undefined) fila[c] = form[c] === '' && c === 'solicitud_id' ? null : form[c]; });
+      var q = form.id
+        ? sb.from('adopter_alerts').update(fila).eq('id', form.id).select().single()
+        : sb.from('adopter_alerts').insert(fila).select().single();
+      return q.then(desempacar);
+    },
+
+    borrarAlerta: function (id) {
+      return sb
+        .from('adopter_alerts')
+        .delete()
+        .eq('id', id)
+        .select()
+        .then(desempacar)
+        .then(function (filas) {
+          if (!filas || filas.length === 0) throw new Error('No se pudo eliminar. Vuelve a iniciar sesión.');
         });
     },
 

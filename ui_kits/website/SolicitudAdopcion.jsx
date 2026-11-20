@@ -75,6 +75,7 @@ function SolicitudAdopcion({ dog, onBack }) {
   const [form, setForm] = React.useState(formularioVacio);
   const [error, setError] = React.useState('');
   const [enviando, setEnviando] = React.useState(false);
+  const [aceptoPrivacidad, setAceptoPrivacidad] = React.useState(false);
   const [enviada, setEnviada] = React.useState(false);
 
   React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
@@ -95,6 +96,11 @@ function SolicitudAdopcion({ dog, onBack }) {
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.correo.trim())) {
       setError('Ese correo no parece válido. Revísalo, porque es por donde te vamos a contestar.');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (!aceptoPrivacidad) {
+      setError('Para enviar tu solicitud necesitamos que aceptes el aviso de privacidad (la casilla de abajo).');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
@@ -181,6 +187,7 @@ function SolicitudAdopcion({ dog, onBack }) {
         </section>
       ))}
 
+      <window.AceptoPrivacidad checked={aceptoPrivacidad} onChange={setAceptoPrivacidad} />
       <div style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap', marginBottom: 40 }}>
         <Button variant="cta" icon="heart" wag onClick={enviar} disabled={enviando}>
           {enviando ? 'Enviando...' : 'Enviar mi solicitud'}

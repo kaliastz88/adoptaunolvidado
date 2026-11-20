@@ -20,6 +20,7 @@ function SolicitudApadrinar({ dog, onBack }) {
   });
   const [error, setError] = React.useState('');
   const [enviando, setEnviando] = React.useState(false);
+  const [aceptoPrivacidad, setAceptoPrivacidad] = React.useState(false);
   const [enviada, setEnviada] = React.useState(false);
 
   React.useEffect(() => { window.lucide && window.lucide.createIcons(); });
@@ -38,6 +39,7 @@ function SolicitudApadrinar({ dog, onBack }) {
       return fallar('Ese correo no parece válido. Es por donde te mandaremos las noticias.');
     }
     if (!form.monto) return fallar('Elige cuánto te gustaría aportar al mes.');
+    if (!aceptoPrivacidad) return fallar('Para enviar tu solicitud necesitamos que aceptes el aviso de privacidad (la casilla de abajo).');
 
     setEnviando(true);
     setError('');
@@ -149,6 +151,7 @@ function SolicitudApadrinar({ dog, onBack }) {
         acordar la forma más cómoda de hacer tu aporte.
       </p>
 
+      <window.AceptoPrivacidad checked={aceptoPrivacidad} onChange={setAceptoPrivacidad} />
       <Button variant="sponsor" icon="hand-heart" wag onClick={enviar} disabled={enviando}>
         {enviando ? 'Enviando...' : `Apadrinar a ${nombreAnimal || 'un rescatado'}`}
       </Button>
