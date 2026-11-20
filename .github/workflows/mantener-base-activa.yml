@@ -1,0 +1,24 @@
+# Supabase pausa los proyectos del plan gratis cuando pasan varios días sin
+# actividad (le pasó al sitio en noviembre de 2026 y el catálogo se quedó
+# vacío). Esta tarea hace una consulta pequeña cada 3 días para mantenerlo
+# activo. Usa la misma clave pública que ya usa el sitio; no es un secreto.
+#
+# Si algún día se contrata el plan Pro de Supabase, este archivo se puede borrar.
+name: Mantener la base de datos activa
+
+on:
+  schedule:
+    - cron: '17 15 */3 * *'   # cada 3 días, 9:17 a.m. hora de la Ciudad de México
+  workflow_dispatch: {}       # también se puede correr a mano desde la pestaña Actions
+
+jobs:
+  consulta:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Consultar el catálogo
+        run: |
+          codigo=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://bsolvxlnzxzfazfejaey.supabase.co/rest/v1/animals?select=id&limit=1" \
+            -H "apikey: sb_publishable_31os-QVuKNpbDzUX0vPiXQ_FBvSm4x1")
+          echo "Supabase respondió: $codigo"
+          test "$codigo" = "200"
